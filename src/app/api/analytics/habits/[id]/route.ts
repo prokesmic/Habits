@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
-export async function GET(_request: Request, { params }: { params: { id: string } }) {
-  const id = params.id;
-  // Return minimal mock; client will fallback to richer mock if needed
+// Loosen handler signature to align with Next.js RouteHandlerConfig in production
+export async function GET(request: Request, context: any) {
+  const { id } = await context.params;
   return NextResponse.json(
     {
       habitName: "Meditation",
