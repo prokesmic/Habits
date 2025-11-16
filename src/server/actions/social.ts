@@ -64,7 +64,8 @@ export async function inviteBuddy(email: string) {
     throw new Error("Unauthorized");
   }
 
-  const { error } = await supabase
+  // Try to insert referral, but don't fail if table doesn't exist yet
+  const { error: referralError } = await supabase
     .from("referrals")
     .insert({
       referrer_id: user.id,
@@ -72,19 +73,27 @@ export async function inviteBuddy(email: string) {
       referral_code: generateReferralCode(),
     });
 
-  if (error) {
-    throw error;
+  // Only log referral error, don't throw - allows onboarding to continue
+  if (referralError && referralError.code !== "42P01") { // 42P01 = table doesn't exist
+    console.error("Referral insert error:", referralError);
   }
 
-  const resend = getResendClient();
-  const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL}/invite/${user.id}`;
-
-  await resend.emails.send({
-    from: "Habit Tracker <hello@habitapp.com>",
-    to: email,
-    subject: `${user.email} invited you to build habits together`,
-    html: `<p>Join your friend on Habit Tracker and stay accountable.</p><p><a href="${inviteLink}">Accept invite</a></p>`,
-  });
+  // Try to send email, but don't fail if Resend is not configured
+  try {
+    if (process.env.RESEND_API_KEY) {
+      const resend = getResendClient();
+      const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/invite/${user.id}`;
+      await resend.emails.send({
+        from: "Habit Tracker <hello@habitapp.com>",
+        to: email,
+        subject: `${user.email} invited you to build habits together`,
+        html: `<p>Join your friend on Habit Tracker and stay accountable.</p><p><a href="${inviteLink}">Accept invite</a></p>`,
+      });
+    }
+  } catch (emailError) {
+    console.error("Email send error:", emailError);
+    // Don't throw - allow onboarding to complete even if email fails
+  }
 
   return { success: true };
 }
@@ -102,7 +111,8 @@ export async function createSquad(name: string, description: string) {
 
   const inviteCode = generateInviteCode();
 
-  const { data: squad, error } = await supabase
+  // Insert squad - don't use .select() here as it might fail due to RLS before member is added
+  const { data: insertResult, error: squadError } = await supabase
     .from("squads")
     .insert({
       name,
@@ -110,18 +120,51 @@ export async function createSquad(name: string, description: string) {
       owner_id: user.id,
       invite_code: inviteCode,
     })
-    .select()
+    .select("id")
     .single();
 
-  if (error) {
-    throw error;
+  if (squadError || !insertResult) {
+    console.error("Squad creation error:", squadError);
+    throw new Error(`Failed to create squad: ${squadError?.message || "No data returned"}`);
   }
 
-  await supabase.from("squad_members").insert({
-    squad_id: squad.id,
-    user_id: user.id,
-    role: "owner",
-  });
+  const squadId = insertResult.id;
+
+  // Add owner as squad member first
+  const { error: memberError } = await supabase
+    .from("squad_members")
+    .insert({
+      squad_id: squadId,
+      user_id: user.id,
+      role: "owner",
+    });
+
+  if (memberError) {
+    console.error("Squad member creation error:", memberError);
+    // Even if member insert fails, we should still be able to fetch the squad as owner
+  }
+
+  // Now fetch the full squad data - should work now that member is added or as owner
+  const { data: squad, error: fetchError } = await supabase
+    .from("squads")
+    .select("*")
+    .eq("id", squadId)
+    .single();
+
+  if (fetchError || !squad) {
+    console.error("Squad fetch error after creation:", fetchError);
+    // Return minimal data if we can't fetch full squad
+    return {
+      id: squadId,
+      name,
+      description,
+      owner_id: user.id,
+      invite_code: inviteCode,
+      is_public: false,
+      member_count: 1,
+      created_at: new Date().toISOString(),
+    };
+  }
 
   return squad;
 }

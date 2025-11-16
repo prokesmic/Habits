@@ -1,26 +1,70 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { track, events } from "@/lib/analytics";
+import { useSearchParams } from "next/navigation";
 
-export default function SignInPage() {
-  const supabase = createClient();
+function SignInForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const searchParams = useSearchParams();
 
-  async function handleMagicLink() {
+  useEffect(() => {
+    const error = searchParams.get("error");
+    if (error === "auth_failed") {
+      setMessage("Authentication failed. Please try again.");
+    }
+  }, [searchParams]);
+
+  async function handleSignIn(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email || !password) return;
+
     setLoading(true);
     setMessage(null);
-    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard` } });
-    if (error) {
-      setMessage(error.message);
-    } else {
-      setMessage("Check your inbox for a magic link!");
-      track(events.signup);
+
+    try {
+      const supabase = createClient();
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setMessage(`Error: ${error.message}`);
+        if (process.env.NODE_ENV === "development") {
+          console.error("Supabase auth error:", error);
+        }
+      } else {
+        track(events.signin);
+        // Redirect to dashboard after successful login
+        router.push("/dashboard");
+        router.refresh();
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
+      
+      if (errorMessage.includes("Missing Supabase environment variables")) {
+        setMessage("Configuration error: Missing Supabase credentials. Please check your .env.local file.");
+      } else if (errorMessage.includes("Failed to fetch") || errorMessage.includes("NetworkError")) {
+        setMessage("Network error: Unable to reach Supabase. Please check your internet connection.");
+      } else {
+        setMessage(`Error: ${errorMessage}`);
+      }
+      
+      if (process.env.NODE_ENV === "development") {
+        console.error("Sign-in error:", err);
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
@@ -29,7 +73,7 @@ export default function SignInPage() {
       <p className="mt-2 text-sm text-slate-500">
         Sign in to keep your streak alive and cheer on your squad.
       </p>
-      <div className="mt-6 space-y-4">
+      <form onSubmit={handleSignIn} className="mt-6 space-y-4">
         <label className="block text-sm font-semibold text-slate-700">
           Email
           <input
@@ -37,47 +81,46 @@ export default function SignInPage() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@example.com"
+            required
+            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+          />
+        </label>
+        <label className="block text-sm font-semibold text-slate-700">
+          Password
+          <input
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder="Enter your password"
+            required
             className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
           />
         </label>
         <button
-          type="button"
-          onClick={handleMagicLink}
-          disabled={loading || !email}
+          type="submit"
+          disabled={loading || !email || !password}
           className="w-full rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:opacity-60"
         >
-          {loading ? "Sending..." : "Send magic link"}
+          {loading ? "Signing in..." : "Sign in"}
         </button>
-      </div>
+      </form>
       <div className="mt-6 space-y-2 text-center text-sm text-slate-500">
-        <p>Or continue with</p>
-        <div className="flex justify-center gap-3">
-          <OAuthButton provider="google" />
-          <OAuthButton provider="github" />
-        </div>
+        <p>
+          Don&apos;t have an account?{" "}
+          <Link href="/auth/sign-up" className="font-semibold text-blue-600 hover:text-blue-700">
+            Sign up
+          </Link>
+        </p>
       </div>
-      {message ? <p className="mt-4 text-center text-sm text-blue-600">{message}</p> : null}
+      {message ? <p className="mt-4 text-center text-sm text-red-600">{message}</p> : null}
     </div>
   );
 }
 
-function OAuthButton({ provider }: { provider: "google" | "github" }) {
-  const supabase = createClient();
-
+export default function SignInPage() {
   return (
-    <button
-      type="button"
-      onClick={async () => {
-        await supabase.auth.signInWithOAuth({
-          provider,
-          options: { redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard` },
-        });
-        track(events.signin, { provider });
-      }}
-      className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
-    >
-      {provider === "google" ? "Google" : "GitHub"}
-    </button>
+    <Suspense fallback={<div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-lg">Loading...</div>}>
+      <SignInForm />
+    </Suspense>
   );
 }
-

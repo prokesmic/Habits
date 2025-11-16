@@ -25,7 +25,10 @@ export async function createHabit(payload: unknown) {
     .single();
 
   if (error) {
-    throw error;
+    // Provide more detailed error information
+    const errorMessage = error.message || JSON.stringify(error);
+    const errorCode = error.code || 'unknown';
+    throw new Error(`Failed to create habit: ${errorMessage} (code: ${errorCode})`);
   }
 
   revalidatePath("/dashboard");
@@ -106,4 +109,28 @@ export async function checkIn(habitId: string, date: string, note?: string) {
   revalidatePath(`/habits/${habitId}`);
 
   return log;
+}
+
+export async function completeOnboarding() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ onboarding_completed: true })
+    .eq("id", user.id);
+
+  if (error) {
+    throw new Error(`Failed to complete onboarding: ${error.message}`);
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath("/onboarding");
 }

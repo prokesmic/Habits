@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { HabitTemplatesQuickAdd } from "@/components/habits/HabitTemplates";
+import { TemplateLibraryModal } from "@/components/habits/TemplateLibraryModal";
 
 export default async function HabitsPage() {
   const supabase = await createClient();
@@ -43,6 +45,10 @@ export default async function HabitsPage() {
           + New habit
         </Link>
       </header>
+      <div className="flex items-center justify-between">
+        <HabitTemplatesQuickAdd />
+        <TemplateLibraryModal />
+      </div>
       {habits?.length ? (
         <ul className="grid gap-4 md:grid-cols-2">
           {habits.map((habit) => (

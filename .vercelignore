@@ -1,0 +1,14 @@
+.git/
+.github/
+.next/
+node_modules/
+coverage/
+*.log
+Dockerfile
+docker-compose.yml
+railway/
+tests/
+**/*.spec.ts
+**/*.test.ts
+
+

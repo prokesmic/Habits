@@ -3,22 +3,42 @@ import { createClient } from "@/lib/supabase/server";
 import { CheckInCard } from "@/components/cards/CheckInCard";
 
 type HabitPageProps = {
-  params: { id: string };
+  params: Promise<{ id: string }> | { id: string };
 };
 
 export default async function HabitDetailPage({ params }: HabitPageProps) {
+  // Await params if it's a Promise (Next.js 15+)
+  const { id } = await Promise.resolve(params);
+  
   const supabase = await createClient();
-  const { data: habit } = await supabase
-    .from("habits")
-    .select("id, title, emoji, description, frequency, target_days_per_week")
-    .eq("id", params.id)
-    .single();
+  
+  // Check authentication first
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
-  if (!habit) {
+  if (authError || !user) {
     notFound();
   }
 
-  const { data: logs } = await supabase
+  const { data: habit, error: habitError } = await supabase
+    .from("habits")
+    .select("id, title, emoji, description, frequency, target_days_per_week, user_id")
+    .eq("id", id)
+    .single();
+
+  if (habitError || !habit) {
+    console.error("Habit fetch error:", habitError);
+    notFound();
+  }
+
+  // Check if user owns this habit
+  if (habit.user_id !== user.id) {
+    notFound();
+  }
+
+  const { data: logs, error: logsError } = await supabase
     .from("habit_logs")
     .select(
       "id, note, streak_count, created_at, status, habit:habits(title, emoji), user:profiles(username)",
@@ -26,6 +46,10 @@ export default async function HabitDetailPage({ params }: HabitPageProps) {
     .eq("habit_id", habit.id)
     .order("log_date", { ascending: false })
     .limit(20);
+
+  if (logsError) {
+    console.error("Logs fetch error:", logsError);
+  }
 
   const parsedLogs =
     (logs ?? []).map((log) => ({

@@ -127,6 +127,7 @@ Required keys:
 - Built to target Vercel + Supabase, but any Next.js-compatible platform works.
 - Ensure environment variables are configured in the hosting platform.
 - Stripe Connect payouts require production-mode accounts and webhook endpoints.
+- See **[docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)** for end-to-end steps (Vercel frontend, optional Railway backend, and GitHub Actions CI).
 
 ## Documentation Map
 

@@ -18,6 +18,7 @@ create table public.profiles (
 
 alter table public.profiles enable row level security;
 create policy "Profiles readable" on public.profiles for select using (true);
+create policy "Profiles insertable by owner" on public.profiles for insert with check (auth.uid() = id);
 create policy "Profiles updatable by owner" on public.profiles for update using (auth.uid() = id);
 
 -- Friendships
@@ -57,6 +58,9 @@ create policy "Squad visible to members or public" on public.squads
       where m.squad_id = squads.id and m.user_id = auth.uid()
     )
   );
+create policy "Squads insertable by owner" on public.squads for insert with check (auth.uid() = owner_id);
+create policy "Squads updatable by owner" on public.squads for update using (auth.uid() = owner_id);
+create policy "Squads deletable by owner" on public.squads for delete using (auth.uid() = owner_id);
 
 create table public.squad_members (
   squad_id uuid references public.squads on delete cascade,
@@ -173,8 +177,9 @@ create policy "Feed visibility" on public.feed_events for select using (
     where sm1.user_id = auth.uid() and sm2.user_id = feed_events.user_id
   )
 );
+create policy "Feed events insertable by owner" on public.feed_events for insert with check (auth.uid() = user_id);
 
--- Challenges & stakes (abridged)
+-- Challenges & stakes
 create table public.challenges (
   id uuid primary key default gen_random_uuid(),
   creator_id uuid references auth.users on delete cascade,
@@ -195,6 +200,16 @@ create table public.challenges (
   updated_at timestamptz default now()
 );
 
+alter table public.challenges enable row level security;
+create policy "Challenges readable" on public.challenges for select using (
+  visibility = 'public'
+  or (visibility = 'link' and true)
+  or creator_id = auth.uid()
+  or exists(select 1 from public.challenge_participants cp where cp.challenge_id = challenges.id and cp.user_id = auth.uid())
+);
+create policy "Challenges insertable by creator" on public.challenges for insert with check (auth.uid() = creator_id);
+create policy "Challenges updatable by creator" on public.challenges for update using (auth.uid() = creator_id);
+
 create table public.challenge_participants (
   id uuid primary key default gen_random_uuid(),
   challenge_id uuid references public.challenges on delete cascade,
@@ -207,6 +222,13 @@ create table public.challenge_participants (
   unique (challenge_id, user_id)
 );
 
+alter table public.challenge_participants enable row level security;
+create policy "Challenge participants readable" on public.challenge_participants for select using (
+  exists(select 1 from public.challenges c where c.id = challenge_participants.challenge_id and (c.visibility = 'public' or c.creator_id = auth.uid() or challenge_participants.user_id = auth.uid()))
+);
+create policy "Challenge participants insertable" on public.challenge_participants for insert with check (auth.uid() = user_id);
+create policy "Challenge participants updatable by owner" on public.challenge_participants for update using (auth.uid() = user_id);
+
 create table public.stakes (
   id uuid primary key default gen_random_uuid(),
   challenge_id uuid references public.challenges on delete cascade,
@@ -215,6 +237,14 @@ create table public.stakes (
   stake_type text check (stake_type in ('winner_takes_all','split_winners','charity')) default 'winner_takes_all',
   platform_fee_percent numeric default 7.5,
   created_at timestamptz default now()
+);
+
+alter table public.stakes enable row level security;
+create policy "Stakes readable" on public.stakes for select using (
+  exists(select 1 from public.challenges c where c.id = stakes.challenge_id and (c.visibility = 'public' or c.creator_id = auth.uid() or exists(select 1 from public.challenge_participants cp where cp.challenge_id = c.id and cp.user_id = auth.uid())))
+);
+create policy "Stakes insertable by challenge creator" on public.stakes for insert with check (
+  exists(select 1 from public.challenges c where c.id = stakes.challenge_id and c.creator_id = auth.uid())
 );
 
 create table public.stake_escrows (
@@ -229,5 +259,55 @@ create table public.stake_escrows (
   created_at timestamptz default now(),
   released_at timestamptz
 );
+
+alter table public.stake_escrows enable row level security;
+create policy "Stake escrows readable by owner" on public.stake_escrows for select using (auth.uid() = user_id);
+create policy "Stake escrows insertable by owner" on public.stake_escrows for insert with check (auth.uid() = user_id);
+create policy "Stake escrows updatable by owner" on public.stake_escrows for update using (auth.uid() = user_id);
+
+-- Function to automatically create profile when user signs up
+create or replace function public.handle_new_user()
+returns trigger as $$
+declare
+  username_base text;
+  final_username text;
+  counter int := 0;
+begin
+  -- Generate username from email (part before @) or use user ID
+  if new.email is not null and new.email != '' then
+    username_base := lower(split_part(new.email, '@', 1));
+    
+    -- Remove special characters and ensure it's valid
+    username_base := regexp_replace(username_base, '[^a-z0-9]', '', 'g');
+    
+    -- Ensure minimum length
+    if length(username_base) < 3 then
+      username_base := 'user' || substr(new.id::text, 1, 8);
+    end if;
+  else
+    -- Fallback if no email
+    username_base := 'user' || substr(new.id::text, 1, 8);
+  end if;
+  
+  -- Try to find unique username
+  final_username := username_base;
+  while exists(select 1 from public.profiles where profiles.username = final_username) loop
+    counter := counter + 1;
+    final_username := username_base || counter::text;
+  end loop;
+  
+  -- Insert profile
+  insert into public.profiles (id, username, onboarding_completed)
+  values (new.id, final_username, false);
+  
+  return new;
+end;
+$$ language plpgsql security definer;
+
+-- Trigger to call the function when a new user is created
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
 
 -- Additional tables: referrals, waitlist (omitted for brevity)

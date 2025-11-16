@@ -20,6 +20,10 @@ export function Step3InviteFriend({ onSkip, onComplete }: Step3InviteFriendProps
       await inviteBuddy(email);
       track(events.firstInviteSent, { method: "email" });
       onComplete();
+    } catch (err) {
+      console.error("Error inviting buddy:", err);
+      // Still complete onboarding even if invite fails
+      onComplete();
     } finally {
       setIsSubmitting(false);
     }

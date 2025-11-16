@@ -1,5 +1,10 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { InstantValueBanner } from "@/components/squads/InstantValueBanner";
+import { EnhancedSquadCard } from "@/components/squads/EnhancedSquadCard";
+import { FiltersAndSort } from "@/components/squads/FiltersAndSort";
+import { SmartRecommendations } from "@/components/squads/SmartRecommendations";
+import { getFeaturedSquads, matchSquadsToHabits } from "@/data/mockSquadsFull";
 
 export default async function SquadsPage() {
   const supabase = await createClient();
@@ -12,7 +17,7 @@ export default async function SquadsPage() {
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <p className="text-sm text-slate-600">
           Join the community by{" "}
-          <Link href="/sign-in" className="font-semibold text-blue-600">
+          <Link href="/auth/sign-in" className="font-semibold text-blue-600">
             signing in
           </Link>
           .
@@ -21,17 +26,18 @@ export default async function SquadsPage() {
     );
   }
 
+  // Fetch user memberships
   const { data: memberships } = await supabase
     .from("squad_members")
     .select("role, joined_at, squad:squads(id, name, description, member_count, invite_code)")
     .eq("user_id", user.id);
 
-  const { data: featured } = await supabase
-    .from("squads")
-    .select("id, name, description, member_count, invite_code")
-    .eq("is_public", true)
-    .order("member_count", { ascending: false })
-    .limit(6);
+  // Fetch user habits for smart recommendations
+  const { data: habits } = await supabase
+    .from("habits")
+    .select("title")
+    .eq("user_id", user.id)
+    .eq("archived", false);
 
   const membershipRows = (memberships ?? []).map((entry) => ({
     id: (entry as any).squad?.id ? String((entry as any).squad.id) : undefined,
@@ -42,13 +48,14 @@ export default async function SquadsPage() {
     role: (entry as any).role ?? "member",
   }));
 
-  const featuredRows = (featured ?? []).map((squad) => ({
-    id: String(squad.id),
-    name: (squad as any).name ?? "Squad",
-    description: (squad as any).description ?? "Accountability crew",
-    member_count: Number((squad as any).member_count ?? 0),
-    invite_code: (squad as any).invite_code ?? "",
-  }));
+  // Get mock featured squads
+  const featuredSquads = getFeaturedSquads();
+
+  // Get smart recommendations based on user habits
+  const userHabitTitles = (habits ?? []).map((h) => h.title);
+  const recommendedSquads = matchSquadsToHabits(userHabitTitles);
+
+  const hasNoSquads = membershipRows.length === 0;
 
   return (
     <div className="space-y-8">
@@ -65,6 +72,10 @@ export default async function SquadsPage() {
         </Link>
       </header>
 
+      {/* Instant Value Banner - Show if user has no squads */}
+      {hasNoSquads && <InstantValueBanner />}
+
+      {/* Your Squads Section */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">Your squads</h2>
@@ -72,7 +83,7 @@ export default async function SquadsPage() {
             Join with invite code
           </Link>
         </div>
-        {membershipRows.length ? (
+        {membershipRows.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2">
             {membershipRows.map((membership) => (
               <article
@@ -96,28 +107,26 @@ export default async function SquadsPage() {
               </article>
             ))}
           </div>
-        ) : (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-500">
-            No squads yet. Join a featured squad to get momentum from day one.
-          </div>
-        )}
+        ) : null}
       </section>
 
+      {/* Smart Recommendations - Show if user has habits */}
+      {recommendedSquads.length > 0 && (
+        <SmartRecommendations recommendedSquads={recommendedSquads} />
+      )}
+
+      {/* Featured Public Squads Section */}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold text-slate-900">Featured public squads</h2>
-        {featuredRows.length ? (
-          <div className="grid gap-4 md:grid-cols-3">
-            {featuredRows.map((squad) => (
-              <article
-                key={squad.id}
-                className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-sm"
-              >
-                <p className="text-lg font-semibold text-slate-900">{squad.name}</p>
-                <p className="mt-2">{squad.description}</p>
-                <p className="mt-3 text-xs uppercase tracking-wide text-slate-400">
-                  {squad.member_count} members • Code {squad.invite_code}
-                </p>
-              </article>
+        
+        {/* Filters and Sort */}
+        <FiltersAndSort />
+        
+        {/* Squad Grid */}
+        {featuredSquads.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {featuredSquads.map((squad) => (
+              <EnhancedSquadCard key={squad.id} squad={squad} />
             ))}
           </div>
         ) : (
