@@ -25,7 +25,31 @@ export default function MarketingPage() {
   ];
 
   return (
-    <main className="flex min-h-screen flex-col gap-12 bg-gradient-to-b from-slate-50 to-white px-4 py-12 sm:gap-16 sm:px-6 sm:py-16">
+    <main className="flex min-h-screen flex-col bg-gradient-to-b from-slate-50 to-white">
+      {/* Navigation Header */}
+      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-sm">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+          <Link href="/" className="text-xl font-bold text-slate-900">
+            HabitStake
+          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/auth/sign-in"
+              className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 hover:text-slate-900"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/auth/sign-up"
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+            >
+              Sign Up
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <div className="flex flex-1 flex-col gap-12 px-4 py-12 sm:gap-16 sm:px-6 sm:py-16">
       <section className="mx-auto flex w-full max-w-6xl flex-col items-center gap-8 text-center">
         <h1 className="max-w-4xl text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl md:text-5xl lg:text-6xl">
           Your friends put <span className="text-blue-600">$500</span> on you quitting coffee. Don&apos;t let them win.
@@ -64,6 +88,7 @@ export default function MarketingPage() {
           </div>
         ))}
       </section>
+      </div>
     </main>
   );
 }

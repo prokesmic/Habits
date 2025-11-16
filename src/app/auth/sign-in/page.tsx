@@ -1,12 +1,16 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { track, events } from "@/lib/analytics";
 import { useSearchParams } from "next/navigation";
 
 function SignInForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const searchParams = useSearchParams();
@@ -18,58 +22,52 @@ function SignInForm() {
     }
   }, [searchParams]);
 
-  const redirectTo = `${typeof window !== "undefined" ? window.location.origin : process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3002"}/auth/callback?next=/dashboard`;
+  async function handleSignIn(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email || !password) return;
 
-  async function handleMagicLink() {
-    if (!email) return;
     setLoading(true);
     setMessage(null);
 
     try {
-      // Create client inside the handler to catch initialization errors
       const supabase = createClient();
-      
-      const { error, data } = await supabase.auth.signInWithOtp({
+
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        options: { emailRedirectTo: redirectTo },
+        password,
       });
 
       if (error) {
-        setMessage(`Error: ${error.message}`);
-        if (process.env.NODE_ENV === "development") {
-          // eslint-disable-next-line no-console
-          console.error("Supabase auth error:", error);
-          // eslint-disable-next-line no-console
-          console.error("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
-          // eslint-disable-next-line no-console
-          console.error("Redirect URL:", redirectTo);
+        if (error.message.includes("Invalid login credentials")) {
+          setMessage("Invalid email or password. Please try again.");
+        } else if (error.message.includes("Email not confirmed")) {
+          setMessage("Please confirm your email address before signing in.");
+        } else {
+          setMessage(`Error: ${error.message}`);
         }
-      } else {
-        setMessage("Check your inbox for a magic link!");
-        track(events.signup);
+        if (process.env.NODE_ENV === "development") {
+          console.error("Supabase signin error:", error);
+        }
+      } else if (data.session) {
+        track(events.signin);
+
+        // Redirect to dashboard
+        router.push("/dashboard");
+        router.refresh();
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Unknown error";
-      
+
       if (errorMessage.includes("Missing Supabase environment variables")) {
         setMessage("Configuration error: Missing Supabase credentials. Please check your .env.local file.");
       } else if (errorMessage.includes("Failed to fetch") || errorMessage.includes("NetworkError")) {
-        setMessage(
-          "Network error: Unable to reach Supabase. " +
-          "Please ensure: 1) Email auth is enabled in Supabase, 2) Redirect URL is configured, " +
-          "3) Your Supabase project is active. Check the browser console for details."
-        );
+        setMessage("Network error: Unable to reach Supabase. Please check your internet connection.");
       } else {
         setMessage(`Error: ${errorMessage}`);
       }
-      
+
       if (process.env.NODE_ENV === "development") {
-        // eslint-disable-next-line no-console
         console.error("Sign-in error:", err);
-        // eslint-disable-next-line no-console
-        console.error("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
-        // eslint-disable-next-line no-console
-        console.error("Anon key present:", !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
       }
     } finally {
       setLoading(false);
@@ -80,9 +78,9 @@ function SignInForm() {
     <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-lg">
       <h1 className="text-2xl font-semibold text-slate-900">Welcome back</h1>
       <p className="mt-2 text-sm text-slate-500">
-        Sign in to keep your streak alive and cheer on your squad.
+        Sign in to continue your habit journey.
       </p>
-      <div className="mt-6 space-y-4">
+      <form onSubmit={handleSignIn} className="mt-6 space-y-4">
         <label className="block text-sm font-semibold text-slate-700">
           Email
           <input
@@ -90,55 +88,48 @@ function SignInForm() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@example.com"
-            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            required
+            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+          />
+        </label>
+        <label className="block text-sm font-semibold text-slate-700">
+          Password
+          <input
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder="Your password"
+            required
+            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
           />
         </label>
         <button
-          type="button"
-          onClick={handleMagicLink}
-          disabled={loading || !email}
+          type="submit"
+          disabled={loading || !email || !password}
           className="w-full rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:opacity-60"
         >
-          {loading ? "Sending..." : "Send magic link"}
+          {loading ? "Signing in..." : "Sign in"}
         </button>
-      </div>
+      </form>
       <div className="mt-6 space-y-2 text-center text-sm text-slate-500">
-        <p>Or continue with</p>
-        <div className="flex justify-center gap-3">
-          <OAuthButton provider="google" />
-          <OAuthButton provider="github" />
-        </div>
+        <p>
+          Don&apos;t have an account?{" "}
+          <Link href="/auth/sign-up" className="font-semibold text-blue-600 hover:text-blue-700">
+            Sign up
+          </Link>
+        </p>
+        <p>
+          <Link href="/auth/forgot-password" className="font-semibold text-slate-600 hover:text-slate-800">
+            Forgot your password?
+          </Link>
+        </p>
       </div>
-      {message ? <p className="mt-4 text-center text-sm text-blue-600">{message}</p> : null}
+      {message ? (
+        <p className={`mt-4 text-center text-sm ${message.includes("Error") || message.includes("Invalid") || message.includes("failed") ? "text-red-600" : "text-blue-600"}`}>
+          {message}
+        </p>
+      ) : null}
     </div>
-  );
-}
-
-function OAuthButton({ provider }: { provider: "google" | "github" }) {
-  const redirectTo = `${typeof window !== "undefined" ? window.location.origin : process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3002"}/auth/callback?next=/dashboard`;
-
-  return (
-    <button
-      type="button"
-      onClick={async () => {
-        try {
-          const supabase = createClient();
-          await supabase.auth.signInWithOAuth({
-            provider,
-            options: { redirectTo },
-          });
-          track(events.signin, { provider });
-        } catch (error) {
-          if (process.env.NODE_ENV === "development") {
-            // eslint-disable-next-line no-console
-            console.error("Supabase OAuth error", error);
-          }
-        }
-      }}
-      className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
-    >
-      {provider === "google" ? "Google" : "GitHub"}
-    </button>
   );
 }
 
