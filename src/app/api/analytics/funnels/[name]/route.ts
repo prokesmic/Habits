@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 
-export async function GET(_req: Request, { params }: { params: { name: string } }) {
+// Loosen typings to satisfy Next.js RouteHandlerConfig expectations in production
+export async function GET(request: Request, context: any) {
+  const { name } = await context.params;
+
   const funnels: any = {
     signup: {
       name: "Signup Funnel",
@@ -23,19 +26,25 @@ export async function GET(_req: Request, { params }: { params: { name: string } 
       ],
     },
   };
-  const funnel = funnels[params.name] ?? funnels.signup;
+  const key = name && funnels[name] ? name : "signup";
+  const funnel = funnels[key];
+
   const steps = funnel.steps.map((s: any, idx: number) => {
     const first = funnel.steps[0].users;
     const prev = idx === 0 ? first : funnel.steps[idx - 1].users;
+    const users = s.users;
     return {
       name: s.name,
-      users: s.users,
-      dropoff: idx === 0 ? 0 : ((prev - s.users) / prev) * 100,
-      conversionRate: (s.users / first) * 100,
+      users,
+      dropoff: idx === 0 || !prev ? 0 : ((prev - users) / prev) * 100,
+      conversionRate: first ? (users / first) * 100 : 0,
     };
   });
+
+  const overallConversion = steps.length && steps[0].users ? (steps[steps.length - 1].users / steps[0].users) * 100 : 0;
+
   return NextResponse.json(
-    { name: funnel.name, steps, overallConversion: (steps[steps.length - 1].users / steps[0].users) * 100 },
+    { name: funnel.name, steps, overallConversion },
     { headers: { "Cache-Control": "public, s-maxage=300" } }
   );
 }
