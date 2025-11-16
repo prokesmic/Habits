@@ -5,7 +5,7 @@ import { Filter } from "lucide-react";
 import type { ChallengeType } from "@/data/mockChallenges";
 
 type FilterOption = "starting_soon" | "high_stakes" | "friends" | "1v1" | "group" | "all";
-type ChallengeFilterType = ChallengeType | "group"; // group maps to squad
+type ChallengeFilterType = ChallengeType | "group" | "all"; // group maps to squad, "all" shows all types
 
 type ChallengeFiltersProps = {
   onFilterChange?: (filter: FilterOption) => void;
