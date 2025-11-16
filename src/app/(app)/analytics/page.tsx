@@ -1,3 +1,4 @@
+"use client";
 import { Suspense, useState } from "react";
 import { PerformanceOverview } from "@/components/analytics/PerformanceOverview";
 import { HabitAnalytics } from "@/components/analytics/HabitAnalytics";
