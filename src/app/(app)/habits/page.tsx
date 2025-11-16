@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { HabitTemplatesQuickAdd } from "@/components/habits/HabitTemplates";
 import { TemplateLibraryModal } from "@/components/habits/TemplateLibraryModal";
 
+export const dynamic = "force-dynamic";
+
 export default async function HabitsPage() {
   const supabase = await createClient();
   const {

@@ -6,6 +6,8 @@ import { FiltersAndSort } from "@/components/squads/FiltersAndSort";
 import { SmartRecommendations } from "@/components/squads/SmartRecommendations";
 import { getFeaturedSquads, matchSquadsToHabits } from "@/data/mockSquadsFull";
 
+export const dynamic = "force-dynamic";
+
 export default async function SquadsPage() {
   const supabase = await createClient();
   const {

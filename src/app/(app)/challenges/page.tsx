@@ -6,6 +6,8 @@ import { ActiveChallengeCard } from "@/components/challenges/ActiveChallengeCard
 import { ChallengeFilters } from "@/components/challenges/ChallengeFilters";
 import { activeChallenges } from "@/data/mockChallenges";
 
+export const dynamic = "force-dynamic";
+
 export default async function ChallengesPage() {
   const supabase = await createClient();
   const {

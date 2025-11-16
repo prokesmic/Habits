@@ -1,6 +1,14 @@
 "use client";
 
-import { io, Socket } from "socket.io-client";
+// TODO: Install socket.io-client package when real-time chat is needed
+// import { io, Socket } from "socket.io-client";
+
+// Placeholder types for socket.io
+interface Socket {
+  on(event: string, callback: (...args: unknown[]) => void): void;
+  emit(event: string, data?: unknown): void;
+  disconnect(): void;
+}
 
 export class SquadChatClient {
   private socket: Socket | null = null;
@@ -16,17 +24,8 @@ export class SquadChatClient {
       console.warn("WS URL not configured; chat disabled.");
       return;
     }
-    this.socket = io(url, {
-      auth: { token: "" , squadId: this.squadId },
-    });
-    this.socket.on("connect", () => {
-      this.joinSquad();
-    });
-    this.socket.on("disconnect", () => {});
-    this.socket.on("error", (error) => {
-      console.error("Socket error:", error);
-      setTimeout(() => this.connect(), 3000);
-    });
+    // Placeholder: Would use socket.io-client here
+    console.warn("[Chat] Socket.io-client not installed. Chat disabled.");
   }
 
   joinSquad() {
@@ -45,11 +44,11 @@ export class SquadChatClient {
     this.socket?.emit("add_reaction", { messageId, emoji });
   }
 
-  onMessage(callback: (message: any) => void) {
+  onMessage(callback: (message: unknown) => void) {
     this.socket?.on("new_message", callback);
   }
 
-  onTyping(callback: (indicator: any) => void) {
+  onTyping(callback: (indicator: unknown) => void) {
     this.socket?.on("user_typing", callback);
   }
 

@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CheckInCard } from "@/components/cards/CheckInCard";
 
+export const dynamic = "force-dynamic";
+
 type HabitPageProps = {
   params: Promise<{ id: string }> | { id: string };
 };

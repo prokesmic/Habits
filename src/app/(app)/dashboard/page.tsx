@@ -14,6 +14,8 @@ import { MoneyWidget } from "@/components/money/MoneyWidget";
 import { StreakProtection } from "@/components/retention/StreakProtection";
 import { AchievementsWidget } from "@/components/retention/Achievements";
 
+export const dynamic = "force-dynamic";
+
 type HabitSupabaseRow = {
   id: string | number;
   title: string;

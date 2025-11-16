@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { ChallengeCard } from "@/components/cards/ChallengeCard";
 
+export const dynamic = "force-dynamic";
+
 export default async function DiscoverChallengesPage() {
   const supabase = await createClient();
 
