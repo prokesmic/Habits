@@ -1,7 +1,7 @@
-\"use client\";
+"use client";
 
-import { useCallback, useEffect, useState } from \"react\";
-import { experimentService } from \"@/lib/experiments\"; 
+import { useCallback, useEffect, useState } from "react";
+import { experimentService } from "@/lib/experiments";
 
 // Placeholder auth hook
 function useAuth() {
@@ -9,7 +9,7 @@ function useAuth() {
   const [user, setUser] = useState<{ id: string } | null>(null);
   useEffect(() => {
     // Hydrate mock user id
-    setUser({ id: \"demo-user\" });
+    setUser({ id: "demo-user" });
   }, []);
   return { user };
 }
