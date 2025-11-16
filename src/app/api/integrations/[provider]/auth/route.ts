@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 
-export async function GET(_req: Request, { params }: { params: { provider: string } }) {
-  // Stub: redirect to provider auth (mock)
-  const url = new URL("/(app)/integrations", process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000");
+// Loosen handler signature to align with Next.js RouteHandlerConfig in production
+export async function GET(request: Request, context: any) {
+  const { provider } = await context.params;
+  const base = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const url = new URL("/(app)/integrations", base);
   return NextResponse.redirect(url);
 }
 
