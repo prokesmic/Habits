@@ -44,6 +44,10 @@ if (!supabaseUrl || !supabaseServiceKey) {
   process.exit(1);
 }
 
+// TypeScript assertion: we know supabaseUrl is defined after the check above
+const supabaseUrlDefined: string = supabaseUrl;
+const supabaseServiceKeyDefined: string = supabaseServiceKey;
+
 async function executeMigration() {
   console.log('🚀 Executing Supabase migration...\n');
 
@@ -55,7 +59,7 @@ async function executeMigration() {
     console.log('📝 Migration file loaded\n');
 
     // Extract project ref
-    const urlMatch = supabaseUrl.match(/https?:\/\/([^.]+)\.supabase\.co/);
+    const urlMatch = supabaseUrlDefined.match(/https?:\/\/([^.]+)\.supabase\.co/);
     if (!urlMatch) {
       throw new Error('Invalid Supabase URL');
     }
@@ -81,7 +85,7 @@ async function executeMigration() {
     // Method: Use Supabase JS client to execute statements if possible
     const { createClient } = await import('@supabase/supabase-js');
     
-    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+    const supabase = createClient(supabaseUrlDefined, supabaseServiceKeyDefined, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
