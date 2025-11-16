@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import { useRouter } from "next/navigation";
+import { completeOnboarding as completeOnboardingAction } from "@/server/actions/onboarding";
 
 type PrimaryGoal = "health" | "discipline" | "money" | "community";
 
@@ -22,6 +23,7 @@ export function OnboardingFlow() {
   const [notifications, setNotifications] = useState<{ enabled: boolean; time?: string }>({
     enabled: false,
   });
+  const [isCompleting, setIsCompleting] = useState(false);
   const totalSteps = 6;
   const router = useRouter();
 
@@ -29,29 +31,21 @@ export function OnboardingFlow() {
   const prevStep = () => setCurrentStep((s) => Math.max(1, s - 1));
   const skipStep = () => nextStep();
 
-  const completeOnboarding = async () => {
+  const handleSkipOnboarding = async () => {
+    setIsCompleting(true);
     try {
-      if (firstHabit) {
-        await fetch("/api/habits/create", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: firstHabit.name,
-            emoji: firstHabit.emoji,
-            frequency: firstHabit.frequency,
-          }),
-        });
-      }
-      if (stake.added && stake.amount) {
-        // Placeholder: add stake flow
-      }
-      if (squad.joined && squad.squadId) {
-        await fetch("/api/squads/join", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ squadId: squad.squadId }),
-        });
-      }
+      await completeOnboardingAction();
+      router.push("/dashboard");
+      router.refresh();
+    } catch {
+      // Still redirect
+      router.push("/dashboard");
+    }
+  };
+
+  const completeOnboarding = async () => {
+    setIsCompleting(true);
+    try {
       if (notifications.enabled) {
         try {
           await Notification.requestPermission();
@@ -59,22 +53,19 @@ export function OnboardingFlow() {
           // ignore
         }
       }
-      await fetch("/api/users/complete-onboarding", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          primaryGoal,
-          firstHabit,
-          stake,
-          squad,
-          notifications,
-        }),
-      });
+
+      // Mark onboarding as complete in database
+      await completeOnboardingAction();
+
+      confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+      setTimeout(() => {
+        router.push("/dashboard");
+        router.refresh();
+      }, 1200);
     } catch {
       // proceed regardless
+      router.push("/dashboard");
     }
-    confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
-    setTimeout(() => router.push("/dashboard"), 1200);
   };
 
   return (
@@ -118,9 +109,13 @@ export function OnboardingFlow() {
                 >
                   Get Started
                 </button>
-                <a href="/auth/sign-in" className="block text-sm text-gray-800 underline">
-                  I already have an account
-                </a>
+                <button
+                  onClick={handleSkipOnboarding}
+                  disabled={isCompleting}
+                  className="block w-full text-sm text-gray-800 underline disabled:opacity-50"
+                >
+                  {isCompleting ? "Loading..." : "Skip setup for now"}
+                </button>
               </div>
             </div>
           )}
