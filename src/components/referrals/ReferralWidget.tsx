@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 type Props = {
   userName?: string;
@@ -19,7 +19,12 @@ export function ReferralWidget({
   active = 1,
   credits = 0,
 }: Props) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const [baseUrl, setBaseUrl] = useState("https://yourapp.vercel.app");
+
+  useEffect(() => {
+    setBaseUrl(window.location.origin);
+  }, []);
+
   const link = `${baseUrl}/r/${referralCode}`;
   const progress = Math.min(3, active);
   const dots = useMemo(() => Array.from({ length: 3 }).map((_, i) => i < progress), [progress]);

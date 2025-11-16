@@ -1,13 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function ShareModal({ code, onClose }: { code: string; onClose: () => void }) {
-  const link = `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/r/${code}`;
+  const [link, setLink] = useState(`https://yourapp.vercel.app/r/${code}`);
   const [copied, setCopied] = useState(false);
   const [message, setMessage] = useState(
     `I'm building habits with real accountability. Join me and we both get $5!\n\n${link}`,
   );
+
+  useEffect(() => {
+    const newLink = `${window.location.origin}/r/${code}`;
+    setLink(newLink);
+    setMessage(
+      `I'm building habits with real accountability. Join me and we both get $5!\n\n${newLink}`,
+    );
+  }, [code]);
 
   async function copy() {
     try {
