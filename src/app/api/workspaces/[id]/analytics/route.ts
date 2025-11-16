@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, context: any) {
+  const { id } = await context.params;
   const analytics = {
-    workspaceId: params.id,
+    workspaceId: id,
     engagement: {
       activeUsers: 42,
       totalUsers: 68,
