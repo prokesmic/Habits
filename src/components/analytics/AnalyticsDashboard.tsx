@@ -206,11 +206,23 @@ export const AnalyticsDashboard = () => {
                 legend: { display: false }
               },
               scales: {
+                x: {
+                  ticks: {
+                    color: '#4B5563' // gray-600 for WCAG compliance
+                  },
+                  grid: {
+                    color: '#E5E7EB' // gray-200
+                  }
+                },
                 y: {
                   beginAtZero: true,
                   max: 100,
                   ticks: {
-                    callback: (value) => `${value}%`
+                    callback: (value) => `${value}%`,
+                    color: '#4B5563' // gray-600 for WCAG compliance
+                  },
+                  grid: {
+                    color: '#E5E7EB' // gray-200
                   }
                 }
               }
@@ -226,7 +238,12 @@ export const AnalyticsDashboard = () => {
             options={{
               responsive: true,
               plugins: {
-                legend: { position: 'right' }
+                legend: {
+                  position: 'right',
+                  labels: {
+                    color: '#4B5563' // gray-600 for WCAG compliance
+                  }
+                }
               }
             }}
           />
@@ -241,6 +258,24 @@ export const AnalyticsDashboard = () => {
               responsive: true,
               plugins: {
                 legend: { display: false }
+              },
+              scales: {
+                x: {
+                  ticks: {
+                    color: '#4B5563' // gray-600 for WCAG compliance
+                  },
+                  grid: {
+                    color: '#E5E7EB' // gray-200
+                  }
+                },
+                y: {
+                  ticks: {
+                    color: '#4B5563' // gray-600 for WCAG compliance
+                  },
+                  grid: {
+                    color: '#E5E7EB' // gray-200
+                  }
+                }
               }
             }}
           />
