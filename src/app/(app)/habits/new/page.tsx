@@ -8,10 +8,12 @@ import { createHabit } from "@/server/actions/habits";
 import { useState } from "react";
 import { track, events } from "@/lib/analytics";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type HabitFormValues = z.input<typeof habitSchema>;
 
 export default function NewHabitPage() {
+  const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const form = useForm<HabitFormValues>({
     resolver: zodResolver(habitSchema),
@@ -29,7 +31,8 @@ export default function NewHabitPage() {
     setSubmitting(true);
     await createHabit(values);
     track(events.habitCreated);
-    window.location.assign("/habits");
+    router.push("/dashboard");
+    router.refresh();
   });
 
   return (
