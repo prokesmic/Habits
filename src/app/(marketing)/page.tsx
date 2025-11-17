@@ -1,6 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function MarketingPage() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const features = [
     {
       icon: "📸",
