@@ -28,7 +28,7 @@ export default async function DiscoverChallengesPage() {
       <header>
         <h1 className="text-3xl font-bold text-slate-900">Discover challenges</h1>
         <p className="mt-2 text-sm text-slate-500">
-          Join public sprints or featured events curated by the Habitee team.
+          Join public sprints or featured events curated by the Momentum team.
         </p>
       </header>
 

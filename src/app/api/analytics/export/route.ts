@@ -26,7 +26,7 @@ export async function GET(request: Request) {
     });
   }
   if (format === "pdf") {
-    const html = `<!doctype html><html><body><h1>Habitee Report (${period})</h1><p>Success Rate: 72%</p></body></html>`;
+    const html = `<!doctype html><html><body><h1>Momentum Report (${period})</h1><p>Success Rate: 72%</p></body></html>`;
     return new NextResponse(html, {
       headers: {
         "Content-Type": "application/pdf",

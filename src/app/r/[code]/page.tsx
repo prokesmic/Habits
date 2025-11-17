@@ -37,7 +37,7 @@ export default function ReferralLandingPage({ params }: { params: { code: string
         <img src={referrer.avatar} alt={referrer.name} className="mx-auto mb-4 h-24 w-24 rounded-full border-4 border-violet-200" />
         <h1 className="mb-2 text-2xl font-bold">{referrer.name} invited you!</h1>
         <p className="mb-6 text-gray-600">
-          Join Habitee and you'll both get <strong>$5</strong>
+          Join Momentum and you'll both get <strong>$5</strong>
         </p>
         <div className="mb-6 rounded-lg border border-violet-200 bg-violet-50 p-4">
           <div className="mb-2 text-sm text-gray-600">What you'll get:</div>

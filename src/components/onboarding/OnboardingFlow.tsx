@@ -100,7 +100,7 @@ export function OnboardingFlow() {
           {currentStep === 1 && (
             <div className="space-y-6 text-center">
               <div className="text-5xl">✨</div>
-              <h2 className="text-2xl font-bold text-gray-900">Welcome to Habitee</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Welcome to Momentum</h2>
               <p className="text-gray-700">Build habits that stick with real accountability</p>
               <div className="space-y-3">
                 <button
