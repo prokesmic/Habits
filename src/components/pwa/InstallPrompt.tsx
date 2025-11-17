@@ -27,7 +27,7 @@ export function InstallPrompt() {
   if (!showPrompt) return null;
 
   return (
-    <div className="fixed bottom-20 left-4 right-4 z-50 rounded-xl border-2 border-violet-500 bg-white p-4 shadow-2xl md:hidden">
+    <div className="fixed bottom-20 left-4 right-4 z-50 rounded-xl border-2 border-orange-500 bg-white p-6 shadow-2xl md:left-auto md:right-4 md:w-96">
       <button
         onClick={() => setShowPrompt(false)}
         className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
@@ -35,14 +35,27 @@ export function InstallPrompt() {
       >
         ✕
       </button>
-      <div className="flex gap-3">
-        <div className="text-4xl">📱</div>
+      <div className="flex gap-4">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-blue-500 flex items-center justify-center text-white text-2xl flex-shrink-0">
+          H
+        </div>
         <div className="flex-1">
-          <h3 className="mb-1 font-semibold">Install Habit Tracker</h3>
-          <p className="mb-3 text-sm text-gray-600">Add to home screen for quick access and offline support</p>
-          <button onClick={handleInstall} className="w-full rounded-lg bg-violet-600 py-2 font-semibold text-white">
-            Install App
-          </button>
+          <h3 className="mb-1 font-bold">Install HabitStake</h3>
+          <p className="mb-4 text-sm text-gray-600">Get the app for quicker check-ins and push notifications!</p>
+          <div className="flex gap-2">
+            <button
+              onClick={handleInstall}
+              className="flex-1 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 py-2 font-semibold text-white text-sm"
+            >
+              Install
+            </button>
+            <button
+              onClick={() => setShowPrompt(false)}
+              className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium"
+            >
+              Not Now
+            </button>
+          </div>
         </div>
       </div>
     </div>

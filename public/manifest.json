@@ -1,11 +1,11 @@
 {
-  "name": "Habit Tracker - Build habits that stick",
-  "short_name": "Habit Tracker",
-  "description": "Build habits that stick with real accountability and money on the line",
+  "name": "HabitStake - Build Better Habits",
+  "short_name": "HabitStake",
+  "description": "Track habits with friends. Stay accountable. Build streaks.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#8B5CF6",
+  "theme_color": "#f97316",
   "orientation": "portrait",
   "icons": [
     { "src": "/icons/icon-72x72.png", "sizes": "72x72", "type": "image/png", "purpose": "any maskable" },
