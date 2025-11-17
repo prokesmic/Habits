@@ -5,6 +5,10 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { toast, CheckInToast } from '@/components/ui/CustomToast';
+import { StreakRiskBanner } from './StreakRiskBanner';
+import { StreakFreezeCard } from './StreakFreezeCard';
+import { StakesCard } from './StakesCard';
+import { DailyRewardsCard } from './DailyRewardsCard';
 
 type HabitStatus = "due" | "done";
 
@@ -89,10 +93,28 @@ export const DesktopDashboardClient = ({
   user,
   habits: initialHabits,
   activities,
+  stakes,
   squadActiveNow
 }: DesktopDashboardClientProps) => {
   const router = useRouter();
   const [habits, setHabits] = useState(initialHabits);
+  const [hasClaimedDailyReward, setHasClaimedDailyReward] = useState(false);
+  const [streakFreezes, setStreakFreezes] = useState(2);
+
+  // Mock data for new features
+  const hoursUntilMidnight = 24 - new Date().getHours();
+  const hasIncompleteHabits = habits.some(h => !h.checkedInToday);
+  const highestStreak = Math.max(...habits.map(h => h.currentStreak), 0);
+
+  const weeklyRewards = [
+    { day: 1, reward: "🌟", claimed: true },
+    { day: 2, reward: "💎", claimed: true },
+    { day: 3, reward: "🔥", claimed: false },
+    { day: 4, reward: "⚡", claimed: false },
+    { day: 5, reward: "🎯", claimed: false },
+    { day: 6, reward: "👑", claimed: false },
+    { day: 7, reward: "🏆", claimed: false },
+  ];
 
   const handleCheckIn = async (habitId: string) => {
     setHabits(prev =>
@@ -211,6 +233,21 @@ export const DesktopDashboardClient = ({
   return (
     <div className="text-slate-900">
       <div className="space-y-6">
+        {/* STREAK RISK WARNING - Show if habits incomplete and time running out */}
+        {hasIncompleteHabits && hoursUntilMidnight <= 12 && highestStreak > 0 && (
+          <StreakRiskBanner
+            hoursRemaining={hoursUntilMidnight}
+            streakDays={highestStreak}
+            hasStreakFreeze={streakFreezes > 0}
+            onUseFreeze={() => setStreakFreezes(prev => Math.max(0, prev - 1))}
+            onCheckIn={() => {
+              if (firstIncompleteHabit) {
+                handleCheckIn(firstIncompleteHabit.id);
+              }
+            }}
+          />
+        )}
+
         {/* HEADER CARD */}
         <section className="mb-6 rounded-3xl bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 p-5 text-white shadow-sm shadow-slate-900/10">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -368,6 +405,31 @@ export const DesktopDashboardClient = ({
                 ))}
               </div>
             </div>
+
+            {/* Stakes Card - Prominent monetization feature */}
+            <StakesCard
+              activeStakes={stakes?.count || 0}
+              totalAtRisk={stakes?.totalAmount || 0}
+              potentialWinnings={Math.round((stakes?.totalAmount || 0) * 1.5)}
+              weeklyProgress={Math.round((habitsCompletedToday / Math.max(totalHabitsToday, 1)) * 100)}
+              onAddStake={() => router.push('/stakes/new')}
+            />
+
+            {/* Daily Rewards */}
+            <DailyRewardsCard
+              currentDay={3}
+              hasClaimedToday={hasClaimedDailyReward}
+              weeklyRewards={weeklyRewards}
+              onClaimReward={() => setHasClaimedDailyReward(true)}
+            />
+
+            {/* Streak Freeze Card */}
+            <StreakFreezeCard
+              freezesAvailable={streakFreezes}
+              freezesUsedThisMonth={1}
+              maxFreezes={5}
+              onPurchaseFreeze={() => setStreakFreezes(prev => prev + 1)}
+            />
           </div>
         </section>
       </div>

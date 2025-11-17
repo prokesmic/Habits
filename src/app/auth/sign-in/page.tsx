@@ -75,9 +75,16 @@ function SignInForm() {
   }
 
   return (
-    <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-lg">
-      <h1 className="text-2xl font-semibold text-slate-900">Welcome back</h1>
-      <p className="mt-2 text-sm text-slate-500">
+    <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-900/5">
+      {/* Brand Logo */}
+      <div className="mb-6 flex justify-center">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 to-indigo-500 text-xl font-bold text-white">
+          H
+        </div>
+      </div>
+
+      <h1 className="text-center text-2xl font-bold text-slate-900">Welcome back</h1>
+      <p className="mt-2 text-center text-sm text-slate-500">
         Sign in to continue your habit journey.
       </p>
       <form onSubmit={handleSignIn} className="mt-6 space-y-4">
@@ -89,7 +96,7 @@ function SignInForm() {
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@example.com"
             required
-            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-gray-900 placeholder:text-slate-400 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
           />
         </label>
         <label className="block text-sm font-semibold text-slate-700">
@@ -100,13 +107,13 @@ function SignInForm() {
             onChange={(event) => setPassword(event.target.value)}
             placeholder="Your password"
             required
-            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-gray-900 placeholder:text-slate-400 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
           />
         </label>
         <button
           type="submit"
           disabled={loading || !email || !password}
-          className="w-full rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:opacity-60"
+          className="w-full rounded-full bg-gradient-to-r from-amber-500 to-indigo-500 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-amber-500/30 transition hover:shadow-lg hover:shadow-amber-500/40 active:scale-95 disabled:opacity-60"
         >
           {loading ? "Signing in..." : "Sign in"}
         </button>
@@ -114,7 +121,7 @@ function SignInForm() {
       <div className="mt-6 space-y-2 text-center text-sm text-slate-500">
         <p>
           Don&apos;t have an account?{" "}
-          <Link href="/auth/sign-up" className="font-semibold text-blue-600 hover:text-blue-700">
+          <Link href="/auth/sign-up" className="font-semibold text-amber-600 hover:text-amber-700">
             Sign up
           </Link>
         </p>
@@ -125,7 +132,7 @@ function SignInForm() {
         </p>
       </div>
       {message ? (
-        <p className={`mt-4 text-center text-sm ${message.includes("Error") || message.includes("Invalid") || message.includes("failed") ? "text-red-600" : "text-blue-600"}`}>
+        <p className={`mt-4 text-center text-sm ${message.includes("Error") || message.includes("Invalid") || message.includes("failed") ? "text-red-600" : "text-amber-600"}`}>
           {message}
         </p>
       ) : null}

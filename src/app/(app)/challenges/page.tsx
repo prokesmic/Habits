@@ -51,22 +51,27 @@ export default async function ChallengesPage() {
 
   return (
     <div className="space-y-8">
-      <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Challenges</h1>
-          <p className="text-sm text-slate-500">
-            Launch 1v1 duels, group sprints, or discover public showdowns.
-          </p>
-        </div>
-        <div className="flex gap-2">
+      {/* Hero Header */}
+      <section className="rounded-3xl bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 p-6 text-white shadow-sm">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">
+              <span>🏆</span>
+              <span>Compete & Win</span>
+            </div>
+            <h1 className="text-2xl font-bold">Challenges</h1>
+            <p className="mt-1 text-sm opacity-90">
+              Launch 1v1 duels, group sprints, or discover public showdowns.
+            </p>
+          </div>
           <Link
             href="/challenges/new"
-            className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+            className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-amber-600 shadow-sm transition hover:bg-amber-50 active:scale-95"
           >
             Create challenge
           </Link>
         </div>
-      </header>
+      </section>
 
       {/* Challenge Types Showcase */}
       <ChallengeTypesShowcase />
@@ -93,9 +98,9 @@ export default async function ChallengesPage() {
                 </div>
                 <Link
                   href={`/challenges/${entry.id}`}
-                  className="mt-4 inline-block text-sm font-semibold text-blue-600"
+                  className="mt-4 inline-block text-sm font-semibold text-amber-600 hover:text-amber-700"
                 >
-                  View details
+                  View details →
                 </Link>
               </article>
             ))}
@@ -109,9 +114,9 @@ export default async function ChallengesPage() {
           <h2 className="text-lg font-semibold text-slate-900">Active Challenges Marketplace</h2>
           <a
             href="/money/transactions"
-            className="rounded-full border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100"
+            className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700 transition hover:bg-amber-100"
           >
-            View winnings
+            💰 View winnings
           </a>
         </div>
         

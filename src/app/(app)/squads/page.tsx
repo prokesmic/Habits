@@ -61,18 +61,27 @@ export default async function SquadsPage() {
 
   return (
     <div className="space-y-8">
-      <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Squads</h1>
-          <p className="text-sm text-slate-500">Rally buddies, share wins, and keep momentum.</p>
+      {/* Hero Header */}
+      <section className="rounded-3xl bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 p-6 text-white shadow-sm">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">
+              <span>👥</span>
+              <span>Better Together</span>
+            </div>
+            <h1 className="text-2xl font-bold">Squads</h1>
+            <p className="mt-1 text-sm opacity-90">
+              Rally buddies, share wins, and keep momentum together.
+            </p>
+          </div>
+          <Link
+            href="/squads/new"
+            className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-indigo-600 shadow-sm transition hover:bg-indigo-50 active:scale-95"
+          >
+            Create squad
+          </Link>
         </div>
-        <Link
-          href="/squads/new"
-          className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
-        >
-          Create squad
-        </Link>
-      </header>
+      </section>
 
       {/* Instant Value Banner - Show if user has no squads */}
       {hasNoSquads && <InstantValueBanner />}
@@ -81,8 +90,8 @@ export default async function SquadsPage() {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">Your squads</h2>
-          <Link href="/squads/join" className="text-sm font-semibold text-blue-600">
-            Join with invite code
+          <Link href="/squads/join" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700">
+            Join with invite code →
           </Link>
         </div>
         {membershipRows.length > 0 ? (
