@@ -151,7 +151,7 @@ export default async function DashboardPage() {
   const totalStakeAmount = dashboardHabits.reduce((sum, h) => sum + (h.stakeAmount || 0), 0);
 
   return (
-    <>
+    <div className="space-y-6">
       <NotificationPermissionPrompt />
 
       <DesktopDashboardClient
@@ -166,6 +166,6 @@ export default async function DashboardPage() {
         stakes={hasActiveStakes ? { count: dashboardHabits.filter(h => h.hasStake).length, totalAmount: totalStakeAmount } : null}
         squadActiveNow={Math.floor(Math.random() * 8) + 2}
       />
-    </>
+    </div>
   );
 }
