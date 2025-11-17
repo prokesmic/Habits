@@ -5,6 +5,7 @@ import type { NextRequest } from "next/server";
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
+  const type = requestUrl.searchParams.get("type");
   const next = requestUrl.searchParams.get("next") ?? "/dashboard";
 
   if (code) {
@@ -13,6 +14,11 @@ export async function GET(request: NextRequest) {
       const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 
       if (!exchangeError) {
+        // Check if this is a password recovery flow
+        if (type === "recovery") {
+          return NextResponse.redirect(new URL("/auth/reset-password", request.url));
+        }
+
         // Ensure profile exists for the user
         const {
           data: { user },
