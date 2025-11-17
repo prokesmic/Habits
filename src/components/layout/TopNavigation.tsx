@@ -78,9 +78,9 @@ export function TopNavigation({ userEmail, userAvatar }: Props) {
             {/* Logo */}
             <Link href="/dashboard" className="flex items-center gap-2">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-blue-500 flex items-center justify-center text-white font-bold text-xl">
-                M
+                H
               </div>
-              <span className="font-bold text-xl text-gray-900">Momentum</span>
+              <span className="font-bold text-xl text-gray-900">Habitee</span>
             </Link>
 
             {/* Nav Links - Desktop only */}

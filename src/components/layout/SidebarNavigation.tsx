@@ -42,7 +42,7 @@ export function SidebarNavigation() {
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-blue-500 flex items-center justify-center text-white font-bold text-xl">
             M
           </div>
-          <span className="text-lg font-bold tracking-tight text-slate-900">Momentum</span>
+          <span className="text-lg font-bold tracking-tight text-slate-900">Habitee</span>
         </Link>
         <nav className="flex flex-1 flex-col gap-1">
           {navItems.map((item) => {

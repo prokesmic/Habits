@@ -64,7 +64,7 @@ export function EnhancedReferralWidget() {
             { name: "Copy Link", icon: "🔗", action: () => copyToClipboard(shareLink()) },
             { name: "WhatsApp", icon: "💬", action: () => (window.location.href = `https://wa.me/?text=${encodeURIComponent(shareLink())}`) },
             { name: "Twitter", icon: "🐦", action: () => (window.location.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareLink())}`) },
-            { name: "Email", icon: "📧", action: () => (window.location.href = `mailto:?subject=Join me on Momentum&body=${encodeURIComponent(shareLink())}`) },
+            { name: "Email", icon: "📧", action: () => (window.location.href = `mailto:?subject=Join me on Habitee&body=${encodeURIComponent(shareLink())}`) },
           ].map((opt) => (
             <button key={opt.name} onClick={opt.action} className="rounded-lg bg-white/10 p-3 text-center transition-colors hover:bg-white/20">
               <div className="mb-1 text-2xl">{opt.icon}</div>

@@ -179,7 +179,7 @@ export const DesktopDashboardClient = ({
 
         {/* 2. TODAY'S HABITS LIST - MAIN FOCUS */}
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold">Today&apos;s Habits</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Today&apos;s Habits</h2>
 
           {habits.length === 0 ? (
             <NoHabitsEmptyState onCreate={() => router.push('/habits/new')} />
@@ -202,7 +202,7 @@ export const DesktopDashboardClient = ({
         {/* Squad Activity Widget */}
         <div className="bg-white rounded-xl border p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-lg flex items-center gap-2">
+            <h3 className="font-bold text-lg flex items-center gap-2 text-gray-900">
               <Users className="w-5 h-5 text-blue-500" />
               Squad Today
             </h3>
@@ -238,7 +238,7 @@ export const DesktopDashboardClient = ({
         {/* Hot Streaks */}
         {hotStreaks.length > 0 && (
           <div className="bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 rounded-xl p-6">
-            <h3 className="font-bold mb-4 flex items-center gap-2">
+            <h3 className="font-bold mb-4 flex items-center gap-2 text-gray-900">
               <Flame className="w-5 h-5 text-orange-500" />
               Hot Streaks
             </h3>
@@ -247,7 +247,7 @@ export const DesktopDashboardClient = ({
                 <div key={streak.id} className="flex items-center gap-3">
                   <span className="text-2xl">{streak.emoji}</span>
                   <div className="flex-1">
-                    <div className="font-medium text-sm">{streak.name}</div>
+                    <div className="font-medium text-sm text-gray-900">{streak.name}</div>
                     <div className="text-xs text-gray-600">{streak.currentStreak} days</div>
                   </div>
                   <span className="text-orange-500 text-xl">🔥</span>
@@ -259,7 +259,7 @@ export const DesktopDashboardClient = ({
 
         {/* Quick Actions */}
         <div className="bg-white rounded-xl border p-6">
-          <h3 className="font-bold mb-4">Quick Actions</h3>
+          <h3 className="font-bold mb-4 text-gray-900">Quick Actions</h3>
           <div className="space-y-2">
             <button
               onClick={() => router.push('/squads')}
@@ -267,7 +267,7 @@ export const DesktopDashboardClient = ({
             >
               <Users className="w-5 h-5 text-blue-600" />
               <div>
-                <div className="font-medium text-sm">Invite Friends</div>
+                <div className="font-medium text-sm text-gray-900">Invite Friends</div>
                 <div className="text-xs text-gray-600">Build your squad</div>
               </div>
             </button>
@@ -277,7 +277,7 @@ export const DesktopDashboardClient = ({
             >
               <Award className="w-5 h-5 text-purple-600" />
               <div>
-                <div className="font-medium text-sm">Join Challenge</div>
+                <div className="font-medium text-sm text-gray-900">Join Challenge</div>
                 <div className="text-xs text-gray-600">Compete & win</div>
               </div>
             </button>
@@ -287,7 +287,7 @@ export const DesktopDashboardClient = ({
             >
               <TrendingUp className="w-5 h-5 text-orange-600" />
               <div>
-                <div className="font-medium text-sm">View Analytics</div>
+                <div className="font-medium text-sm text-gray-900">View Analytics</div>
                 <div className="text-xs text-gray-600">Track your progress</div>
               </div>
             </button>
@@ -305,7 +305,7 @@ export const DesktopDashboardClient = ({
               {achievements.slice(0, 9).map((achievement) => (
                 <div key={achievement.id} className="text-center p-2">
                   <div className="text-3xl mb-1">{achievement.emoji}</div>
-                  <div className="text-xs">{achievement.name}</div>
+                  <div className="text-xs text-gray-700">{achievement.name}</div>
                 </div>
               ))}
             </div>

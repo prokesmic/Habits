@@ -4,13 +4,13 @@ export const getShareTemplate = (
 ) => {
   const templates = {
     success_story: {
-      title: `I just completed a ${data.days}-day streak on Momentum!`,
+      title: `I just completed a ${data.days}-day streak on Habitee!`,
       description: `${data.days} days of ${data.habitName} and counting. Join me and we both get $5!`,
       image: `/og-images/success-${data.userId}.png`,
       cta: "Start Your Journey",
     },
     milestone: {
-      title: `Just hit ${data.milestone} on Momentum! 🎉`,
+      title: `Just hit ${data.milestone} on Habitee! 🎉`,
       description: `Building habits that stick with real accountability. Join me!`,
       image: `/og-images/milestone-${data.milestone}.png`,
       cta: "Join Now",
@@ -22,7 +22,7 @@ export const getShareTemplate = (
       cta: "Accept Challenge",
     },
     generic: {
-      title: "Join me on Momentum",
+      title: "Join me on Habitee",
       description: "Build habits that stick with real money on the line. We both get $5!",
       image: "/og-images/default.png",
       cta: "Get Started",

@@ -19,13 +19,13 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Momentum – Build Better Habits Together",
-    template: "%s | Momentum",
+    default: "Habitee – Build Better Habits Together",
+    template: "%s | Habitee",
   },
   description:
     "Track habits with friends. Stay accountable. Build lasting streaks together.",
   manifest: "/manifest.json",
-  applicationName: "Momentum",
+  applicationName: "Habitee",
 };
 
 export default function RootLayout({

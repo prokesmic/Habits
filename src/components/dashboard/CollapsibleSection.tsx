@@ -25,12 +25,12 @@ export const CollapsibleSection = ({
         onClick={() => setIsCollapsed(!isCollapsed)}
         className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
       >
-        <div className="flex items-center gap-2 font-bold">
+        <div className="flex items-center gap-2 font-bold text-gray-900">
           {icon}
           {title}
         </div>
         <ChevronDown
-          className={`w-5 h-5 transition-transform ${isCollapsed ? '' : 'rotate-180'}`}
+          className={`w-5 h-5 text-gray-600 transition-transform ${isCollapsed ? '' : 'rotate-180'}`}
         />
       </button>
 
