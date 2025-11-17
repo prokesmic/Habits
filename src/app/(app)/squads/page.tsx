@@ -97,9 +97,10 @@ export default async function SquadsPage() {
         {membershipRows.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2">
             {membershipRows.map((membership) => (
-              <article
+              <Link
                 key={membership.id}
-                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                href={`/squads/${membership.id}`}
+                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-indigo-300 hover:shadow-md"
               >
                 <div className="flex items-center justify-between">
                   <p className="text-lg font-semibold text-slate-900">
@@ -115,7 +116,7 @@ export default async function SquadsPage() {
                 <p className="mt-3 text-xs uppercase tracking-wide text-slate-600">
                   {membership.member_count} members
                 </p>
-              </article>
+              </Link>
             ))}
           </div>
         ) : null}
