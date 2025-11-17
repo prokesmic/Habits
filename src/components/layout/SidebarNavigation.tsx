@@ -39,7 +39,7 @@ export function SidebarNavigation() {
           href="/"
           className="mb-8 text-lg font-semibold tracking-tight text-slate-900"
         >
-          Habit Tracker
+          Habitee
         </Link>
         <nav className="flex flex-1 flex-col gap-1">
           {navItems.map((item) => {

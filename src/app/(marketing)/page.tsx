@@ -39,7 +39,7 @@ export default function MarketingPage() {
       <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <Link href="/" className="text-xl font-bold text-slate-900">
-            HabitStake
+            Habitee
           </Link>
           <div className="flex items-center gap-3">
             <Link
@@ -108,10 +108,81 @@ export default function MarketingPage() {
 
           {/* Preview Image/Demo */}
           <div className="relative">
-            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-4xl mx-auto border border-gray-100">
-              {/* Dashboard preview placeholder */}
-              <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-50 rounded-lg flex items-center justify-center">
-                <span className="text-gray-400">Dashboard Preview</span>
+            <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-4xl mx-auto border border-gray-100">
+              {/* Dashboard preview mockup */}
+              <div className="bg-gradient-to-br from-gray-50 to-white rounded-lg p-4">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-blue-500 flex items-center justify-center text-white font-bold">
+                      JD
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-900">Good morning, John!</div>
+                      <div className="text-sm text-gray-500">3 habits to complete today</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 bg-orange-100 px-3 py-1 rounded-full">
+                    <span className="text-orange-500">🔥</span>
+                    <span className="font-bold text-orange-600">15 day streak</span>
+                  </div>
+                </div>
+
+                {/* Habits Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                  {[
+                    { emoji: "🏃", name: "Morning Run", streak: 15, checked: true },
+                    { emoji: "📚", name: "Read 30 mins", streak: 8, checked: false },
+                    { emoji: "💧", name: "Drink 8 glasses", streak: 22, checked: false },
+                  ].map((habit) => (
+                    <div
+                      key={habit.name}
+                      className={`p-4 rounded-xl border-2 ${
+                        habit.checked
+                          ? "bg-green-50 border-green-200"
+                          : "bg-white border-gray-100 hover:border-orange-300"
+                      } transition-all`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-2xl">{habit.emoji}</span>
+                        {habit.checked && (
+                          <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                            Done!
+                          </span>
+                        )}
+                      </div>
+                      <div className="font-semibold text-gray-900">{habit.name}</div>
+                      <div className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                        <span>🔥</span>
+                        <span>{habit.streak} days</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Activity Feed Preview */}
+                <div className="bg-white rounded-xl border border-gray-100 p-3">
+                  <div className="text-sm font-semibold text-gray-600 mb-3">Squad Activity</div>
+                  <div className="space-y-3">
+                    {[
+                      { user: "Sarah", action: "completed Morning Run", time: "2m ago", emoji: "💪" },
+                      { user: "Mike", action: "hit 30-day streak!", time: "15m ago", emoji: "🔥" },
+                      { user: "Emma", action: "joined your challenge", time: "1h ago", emoji: "🏆" },
+                    ].map((activity, i) => (
+                      <div key={i} className="flex items-center gap-3 text-sm">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center text-white text-xs font-bold">
+                          {activity.user[0]}
+                        </div>
+                        <div className="flex-1">
+                          <span className="font-semibold">{activity.user}</span>{" "}
+                          <span className="text-gray-600">{activity.action}</span>{" "}
+                          <span className="text-lg">{activity.emoji}</span>
+                        </div>
+                        <span className="text-gray-400 text-xs">{activity.time}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
 

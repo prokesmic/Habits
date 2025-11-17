@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Habit Tracker – Stick With Your Squad",
-    template: "%s | Habit Tracker",
+    default: "Habitee – Stick With Your Squad",
+    template: "%s | Habitee",
   },
   description:
     "Social accountability meets daily rituals. Track habits, nudge buddies, and stay consistent with friendly stakes.",

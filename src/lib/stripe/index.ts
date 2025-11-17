@@ -8,7 +8,7 @@ export function getStripe() {
     stripeClient = new Stripe(assertEnv("STRIPE_SECRET_KEY", process.env.STRIPE_SECRET_KEY), {
       apiVersion: "2025-10-29.clover",
       appInfo: {
-        name: "Habit Tracker",
+        name: "Habitee",
       },
     });
   }

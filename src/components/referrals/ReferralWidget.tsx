@@ -58,7 +58,7 @@ export function ReferralWidget({
             onClick={() => {
               const message = `I'm building habits with real accountability. Join me and we both get $5! ${link}`;
               if (navigator.share) {
-                navigator.share({ title: "Join me on Habit Tracker", text: message, url: link }).catch(() => {});
+                navigator.share({ title: "Join me on Habitee", text: message, url: link }).catch(() => {});
               } else {
                 window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`, "_blank");
               }
