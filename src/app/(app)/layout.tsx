@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { BottomNavigation } from "@/components/layout/BottomNavigation";
-import { SidebarNavigation } from "@/components/layout/SidebarNavigation";
+import { TopNavigation } from "@/components/layout/TopNavigation";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
@@ -19,51 +18,16 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50">
-      {/* Mobile Header - only visible on mobile */}
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white md:hidden">
-        <div className="flex items-center justify-between px-4 py-3">
-          <Link
-            href="/"
-            className="text-lg font-semibold tracking-tight text-slate-900"
-          >
-            Habit Tracker
-          </Link>
-          {user?.email && (
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-              {user.email.split("@")[0]}
-            </div>
-          )}
+    <div className="flex min-h-screen flex-col bg-gray-50">
+      {/* Top Navigation */}
+      <TopNavigation userEmail={user?.email} userAvatar={null} />
+
+      {/* Main Content */}
+      <main className="flex-1 pb-24 md:pb-8">
+        <div className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 md:py-8">
+          {children}
         </div>
-      </header>
-
-      {/* Desktop Header - only visible on desktop */}
-      <header className="hidden border-b border-slate-200 bg-white md:block">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <Link
-            href="/"
-            className="text-xl font-semibold tracking-tight text-slate-900"
-          >
-            Habit Tracker
-          </Link>
-          {user?.email && (
-            <div className="text-sm font-medium text-slate-600">{user.email}</div>
-          )}
-        </div>
-      </header>
-
-      {/* Main Content Area */}
-      <div className="flex flex-1 flex-col md:flex-row">
-        {/* Desktop Sidebar */}
-        <SidebarNavigation />
-
-        {/* Main Content */}
-        <main className="flex-1 pb-24 md:pb-8">
-          <div className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 md:py-8">
-            {children}
-          </div>
-        </main>
-      </div>
+      </main>
 
       {/* Mobile Bottom Navigation */}
       <BottomNavigation />
