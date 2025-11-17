@@ -112,7 +112,7 @@ export const CheckInButton = ({
         <h3 className="font-semibold text-lg text-gray-900">Check in to {habitName}</h3>
         <button
           onClick={() => setShowProofOptions(false)}
-          className="text-gray-400 hover:text-gray-600"
+          className="text-gray-600 hover:text-gray-700"
           type="button"
         >
           ✕

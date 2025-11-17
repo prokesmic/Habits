@@ -112,7 +112,7 @@ export default async function SquadsPage() {
                 <p className="mt-2 text-sm text-slate-600">
                   {membership.description}
                 </p>
-                <p className="mt-3 text-xs uppercase tracking-wide text-slate-400">
+                <p className="mt-3 text-xs uppercase tracking-wide text-slate-600">
                   {membership.member_count} members
                 </p>
               </article>

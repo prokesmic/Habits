@@ -322,7 +322,7 @@ function ActivityRow({
           <span className="font-semibold">{name}</span> {action}
         </span>
       </div>
-      <span className="text-[11px] text-slate-400">{time}</span>
+      <span className="text-[11px] text-slate-600">{time}</span>
     </div>
   );
 }

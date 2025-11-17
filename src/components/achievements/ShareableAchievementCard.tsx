@@ -164,7 +164,7 @@ export function ShareableAchievementCard({
                 {copied ? (
                   <Check className="h-4 w-4 text-emerald-500" />
                 ) : (
-                  <Copy className="h-4 w-4 text-slate-400" />
+                  <Copy className="h-4 w-4 text-slate-500" />
                 )}
                 {copied ? "Copied!" : "Copy Link"}
               </button>
@@ -172,7 +172,7 @@ export function ShareableAchievementCard({
                 onClick={() => setShowShareOptions(false)}
                 className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-slate-700 transition hover:bg-slate-50"
               >
-                <Download className="h-4 w-4 text-slate-400" />
+                <Download className="h-4 w-4 text-slate-500" />
                 Download Image
               </button>
             </motion.div>
@@ -181,7 +181,7 @@ export function ShareableAchievementCard({
       </div>
 
       {/* Habitee branding */}
-      <div className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-400">
+      <div className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-600">
         <div className="flex h-5 w-5 items-center justify-center rounded bg-gradient-to-tr from-amber-500 to-indigo-500 text-[10px] font-bold text-white">
           H
         </div>

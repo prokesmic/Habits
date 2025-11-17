@@ -579,7 +579,7 @@ function QuickActionItem({ action }: { action: QuickAction }) {
         <span>{action.label}</span>
       </span>
       {action.helperLabel && (
-        <span className="text-xs text-slate-400">{action.helperLabel}</span>
+        <span className="text-xs text-slate-600">{action.helperLabel}</span>
       )}
     </button>
   );

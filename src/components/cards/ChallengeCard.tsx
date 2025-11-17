@@ -28,7 +28,7 @@ export function ChallengeCard({ challenge }: ChallengeCardProps) {
           <p className="mt-2 text-sm text-slate-600">
             {challenge.description ?? "Stay accountable with friends worldwide."}
           </p>
-          <div className="mt-4 flex flex-wrap gap-3 text-xs uppercase tracking-wide text-slate-400">
+          <div className="mt-4 flex flex-wrap gap-3 text-xs uppercase tracking-wide text-slate-600">
             <span>📅 {challenge.duration_days ?? 7} days</span>
             <span>
               🎯 {challenge.target_completions ?? 5}/{challenge.duration_days ?? 7}

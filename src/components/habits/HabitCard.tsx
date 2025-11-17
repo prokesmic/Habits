@@ -66,7 +66,7 @@ export function HabitCard({ habit, onQuickCheckIn }: HabitCardProps) {
                 className={`flex h-5 w-5 items-center justify-center rounded-sm border ${
                   done
                     ? "border-green-500 bg-green-500 text-white"
-                    : "border-slate-200 bg-slate-100 text-slate-400"
+                    : "border-slate-200 bg-slate-100 text-slate-500"
                 }`}
               >
                 {done ? <Check className="h-3 w-3" /> : null}

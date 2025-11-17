@@ -91,7 +91,7 @@ export default async function ChallengesPage() {
               >
                 <h2 className="text-lg font-semibold text-slate-900">{entry.name}</h2>
                 <p className="mt-2">{entry.description}</p>
-                <div className="mt-3 flex flex-wrap gap-4 text-xs uppercase tracking-wide text-slate-400">
+                <div className="mt-3 flex flex-wrap gap-4 text-xs uppercase tracking-wide text-slate-600">
                   <span>{entry.challenge_format}</span>
                   <span>{entry.participant_count} participants</span>
                   <span>{entry.status}</span>

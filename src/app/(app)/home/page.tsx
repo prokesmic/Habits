@@ -456,7 +456,7 @@ export default function MobileHomePage() {
                 <Award className="w-5 h-5 text-yellow-500" />
                 Achievements ({data.achievements.length})
               </h2>
-              <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${showAchievements ? 'rotate-90' : ''}`} />
+              <ChevronRight className={`w-5 h-5 text-gray-500 transition-transform ${showAchievements ? 'rotate-90' : ''}`} />
             </button>
 
             <AnimatePresence>
@@ -493,7 +493,7 @@ export default function MobileHomePage() {
                 <span className="text-purple-500">💰</span>
                 Active Stakes ({data.stakes.active})
               </h2>
-              <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${showStakes ? 'rotate-90' : ''}`} />
+              <ChevronRight className={`w-5 h-5 text-gray-500 transition-transform ${showStakes ? 'rotate-90' : ''}`} />
             </button>
 
             <AnimatePresence>

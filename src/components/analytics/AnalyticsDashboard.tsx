@@ -252,7 +252,7 @@ export const AnalyticsDashboard = () => {
           <div className="space-y-3">
             {analytics.topHabits.map((habit, i) => (
               <div key={habit.id} className="flex items-center gap-3">
-                <div className="w-8 text-center font-bold text-gray-400">
+                <div className="w-8 text-center font-bold text-gray-600">
                   #{i + 1}
                 </div>
                 <div className="text-2xl">{habit.emoji}</div>

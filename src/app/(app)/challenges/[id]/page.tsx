@@ -27,12 +27,12 @@ export default async function ChallengeDetailPage({ params }: ChallengePageProps
   return (
     <div className="space-y-6">
       <header className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-xs uppercase tracking-wide text-slate-400">Challenge</p>
+        <p className="text-xs uppercase tracking-wide text-slate-600">Challenge</p>
         <h1 className="mt-2 text-3xl font-semibold text-slate-900">{challenge.name}</h1>
         <p className="mt-3 text-sm text-slate-600">
           {challenge.description ?? "Compete with your squad and keep consistency high."}
         </p>
-        <div className="mt-4 flex flex-wrap gap-4 text-xs uppercase tracking-wide text-slate-400">
+        <div className="mt-4 flex flex-wrap gap-4 text-xs uppercase tracking-wide text-slate-600">
           <span>{challenge.challenge_format}</span>
           <span>
             {challenge.duration_days} days • target {challenge.target_completions}
@@ -56,7 +56,7 @@ export default async function ChallengeDetailPage({ params }: ChallengePageProps
           </button>
         </div>
         <table className="mt-4 w-full table-auto text-sm text-slate-600">
-          <thead className="text-left text-xs uppercase tracking-wide text-slate-400">
+          <thead className="text-left text-xs uppercase tracking-wide text-slate-600">
             <tr>
               <th className="pb-2">Rank</th>
               <th className="pb-2">Participant</th>

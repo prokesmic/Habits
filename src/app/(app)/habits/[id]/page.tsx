@@ -78,12 +78,12 @@ export default async function HabitDetailPage({ params }: HabitPageProps) {
   return (
     <div className="space-y-6">
       <header className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-xs uppercase tracking-wide text-slate-400">Habit</p>
+        <p className="text-xs uppercase tracking-wide text-slate-600">Habit</p>
         <h1 className="mt-2 text-3xl font-semibold text-slate-900">
           {habit.emoji ?? "✅"} {habit.title}
         </h1>
         <p className="mt-3 text-sm text-slate-600">{habit.description}</p>
-        <div className="mt-4 flex gap-4 text-xs uppercase tracking-wide text-slate-400">
+        <div className="mt-4 flex gap-4 text-xs uppercase tracking-wide text-slate-600">
           <span>{habit.frequency}</span>
           <span>Target {habit.target_days_per_week}/week</span>
         </div>

@@ -134,7 +134,7 @@ const ActivityCard = ({
           </div>
         </div>
 
-        <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-400">
+        <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-500">
           <Flag className="w-4 h-4" />
         </button>
       </div>
