@@ -38,18 +38,30 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  isLoading?: boolean;
+  loadingText?: string;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild, ...props }, ref) => {
+  ({ className, variant, size, asChild, isLoading, loadingText, children, disabled, ...props }, ref) => {
     // For now, we'll ignore asChild since we're using <a> tags directly
     // In a full implementation, this would use Radix UI's Slot component
     return (
       <button
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        disabled={disabled || isLoading}
         {...props}
-      />
+      >
+        {isLoading ? (
+          <>
+            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            {loadingText || children}
+          </>
+        ) : (
+          children
+        )}
+      </button>
     );
   },
 );
