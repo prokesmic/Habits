@@ -209,68 +209,8 @@ export const DesktopDashboardClient = ({
   const firstIncompleteHabit = todaysHabits.find(h => h.status === "due");
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      {/* NAVBAR */}
-      <header className="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-slate-200">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
-          {/* Brand */}
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-500 to-indigo-500 text-white font-semibold">
-              H
-            </div>
-            <span className="text-lg font-semibold tracking-tight">
-              Habitee
-            </span>
-          </div>
-
-          {/* Center nav tabs */}
-          <div className="hidden items-center gap-2 md:flex">
-            <button className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-3 py-1 text-sm font-medium text-orange-600">
-              <span>📅</span>
-              <span>Today</span>
-            </button>
-            <Link
-              href="/squads"
-              className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-            >
-              <span>👥</span>
-              <span>Squads</span>
-            </Link>
-            <Link
-              href="/discover"
-              className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-            >
-              <span>🧭</span>
-              <span>Discover</span>
-            </Link>
-            <Link
-              href="/challenges"
-              className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-            >
-              <span>🏆</span>
-              <span>Challenges</span>
-            </Link>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-3">
-            <Link
-              href="/habits/new"
-              className="hidden rounded-full bg-amber-500 px-4 py-1.5 text-sm font-semibold text-white shadow-sm shadow-amber-500/40 transition hover:bg-amber-600 hover:shadow-md hover:shadow-amber-500/50 md:inline-flex"
-            >
-              + New Habit
-            </Link>
-            <Link
-              href="/profile"
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700"
-            >
-              {user.firstName[0]}
-            </Link>
-          </div>
-        </nav>
-      </header>
-
-      <main className="mx-auto max-w-6xl px-4 pb-10 pt-6 md:px-6">
+    <div className="text-slate-900">
+      <div className="space-y-6">
         {/* HEADER CARD */}
         <section className="mb-6 rounded-3xl bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 p-5 text-white shadow-sm shadow-slate-900/10">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -430,7 +370,7 @@ export const DesktopDashboardClient = ({
             </div>
           </div>
         </section>
-      </main>
+      </div>
     </div>
   );
 };
