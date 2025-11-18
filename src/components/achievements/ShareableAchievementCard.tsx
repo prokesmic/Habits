@@ -50,16 +50,16 @@ export function ShareableAchievementCard({
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(
-      `https://habitee.app/achievement/${achievement.id}?user=${userName}`
+      `https://habitio.app/achievement/${achievement.id}?user=${userName}`
     );
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleShare = (platform: string) => {
-    const shareText = `🏆 Just unlocked "${achievement.name}" on Habitee! ${achievement.emoji}\n\n${
+    const shareText = `🏆 Just unlocked "${achievement.name}" on Habitio! ${achievement.emoji}\n\n${
       totalStreakDays > 0 ? `Currently on a ${totalStreakDays}-day streak! 🔥\n\n` : ""
-    }Join me in building better habits: https://habitee.app`;
+    }Join me in building better habits: https://habitio.app`;
 
     if (platform === "twitter") {
       window.open(
@@ -180,12 +180,12 @@ export function ShareableAchievementCard({
         </div>
       </div>
 
-      {/* Habitee branding */}
+      {/* Habitio branding */}
       <div className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-600">
         <div className="flex h-5 w-5 items-center justify-center rounded bg-gradient-to-tr from-amber-500 to-indigo-500 text-[10px] font-bold text-white">
           H
         </div>
-        <span>Habitee</span>
+        <span>Habitio</span>
       </div>
     </motion.div>
   );

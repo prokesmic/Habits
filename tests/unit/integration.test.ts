@@ -237,9 +237,9 @@ describe('User Dashboard Flow', () => {
   });
 
   describe('Branding Consistency', () => {
-    it('uses Habitee brand name', () => {
-      const brandName = 'Habitee';
-      expect(brandName).toBe('Habitee');
+    it('uses Habitio brand name', () => {
+      const brandName = 'Habitio';
+      expect(brandName).toBe('Habitio');
       expect(brandName).not.toBe('Momentum');
       expect(brandName).not.toBe('HabitTracker');
     });

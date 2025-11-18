@@ -84,10 +84,10 @@ export async function inviteBuddy(email: string) {
       const resend = getResendClient();
       const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/invite/${user.id}`;
       await resend.emails.send({
-        from: "Habitee <hello@habitapp.com>",
+        from: "Habitio <hello@habitapp.com>",
         to: email,
         subject: `${user.email} invited you to build habits together`,
-        html: `<p>Join your friend on Habitee and stay accountable.</p><p><a href="${inviteLink}">Accept invite</a></p>`,
+        html: `<p>Join your friend on Habitio and stay accountable.</p><p><a href="${inviteLink}">Accept invite</a></p>`,
       });
     }
   } catch (emailError) {

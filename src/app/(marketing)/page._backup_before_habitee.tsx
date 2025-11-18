@@ -19,7 +19,7 @@ export default function MarketingPage() {
       icon: "👥",
       title: "Social at the Core",
       description:
-        "Reactions, comments, and activity feeds keep every habit visible to your squad. Habitee never fades.",
+        "Reactions, comments, and activity feeds keep every habit visible to your squad. Habitio never fades.",
       color: "from-blue-500 to-cyan-600",
     },
     {
@@ -45,7 +45,7 @@ export default function MarketingPage() {
       <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <Link href="/" className="text-xl font-bold text-slate-900">
-            Habitee
+            Habitio
           </Link>
           <div className="flex items-center gap-3">
             <Link

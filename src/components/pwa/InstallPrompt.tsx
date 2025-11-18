@@ -40,7 +40,7 @@ export function InstallPrompt() {
           H
         </div>
         <div className="flex-1">
-          <h3 className="mb-1 font-bold">Install Habitee</h3>
+          <h3 className="mb-1 font-bold">Install Habitio</h3>
           <p className="mb-4 text-sm text-gray-600">Get the app for quicker check-ins and push notifications!</p>
           <div className="flex gap-2">
             <button

@@ -13,7 +13,7 @@ export default function LandingPage() {
               H
             </div>
             <span className="text-lg font-semibold tracking-tight">
-              Habitee
+              Habitio
             </span>
           </div>
 

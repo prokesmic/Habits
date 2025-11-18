@@ -31,7 +31,7 @@ export function ShareModal({ code, onClose }: { code: string; onClose: () => voi
         window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank");
         break;
       case "email":
-        window.location.href = `mailto:?subject=Join me on Habitee&body=${encodeURIComponent(message)}`;
+        window.location.href = `mailto:?subject=Join me on Habitio&body=${encodeURIComponent(message)}`;
         break;
       case "sms":
         window.location.href = `sms:?body=${encodeURIComponent(message)}`;
