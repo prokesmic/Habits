@@ -447,8 +447,8 @@ function HabitCard({ habit, onCheckIn }: { habit: TransformedHabit; onCheckIn: (
       <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 shadow-sm shadow-emerald-200/60">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-500 text-lg text-white">
-              ✅
+            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-500 text-lg">
+              <span>{habit.emoji}</span>
             </div>
             <div>
               <div className="flex items-center gap-2">

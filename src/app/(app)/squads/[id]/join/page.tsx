@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Users, DollarSign, ArrowLeft } from "lucide-react";
+import { allSquads } from "@/data/mockSquadsFull";
 
 type JoinSquadPageProps = {
   params: { id: string };
@@ -13,13 +14,31 @@ export default function JoinSquadPage({ params }: JoinSquadPageProps) {
   const router = useRouter();
   const [joining, setJoining] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resolvedParams, setResolvedParams] = useState<{ id: string } | null>(null);
+
+  useEffect(() => {
+    Promise.resolve(params).then(setResolvedParams);
+  }, [params]);
+
+  const squadId = resolvedParams?.id;
+  const mockSquad = squadId ? allSquads.find((s) => s.id === squadId) : null;
+  const isMockSquad = !!mockSquad;
 
   const handleJoin = async () => {
+    if (!squadId) return;
+
+    if (isMockSquad) {
+      // For mock squads, show coming soon alert
+      alert(`Joining "${mockSquad.name}" squad with $${mockSquad.entryStake} stake is coming soon! This is a demo squad.`);
+      router.push(`/squads/${squadId}`);
+      return;
+    }
+
     setJoining(true);
     setError(null);
 
     try {
-      const response = await fetch(`/api/squads/${params.id}/join`, {
+      const response = await fetch(`/api/squads/${squadId}/join`, {
         method: "POST",
       });
 
@@ -29,13 +48,21 @@ export default function JoinSquadPage({ params }: JoinSquadPageProps) {
       }
 
       // Redirect to squad detail page
-      router.push(`/squads/${params.id}`);
+      router.push(`/squads/${squadId}`);
       router.refresh();
     } catch (err: any) {
       setError(err.message);
       setJoining(false);
     }
   };
+
+  if (!resolvedParams) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -47,13 +74,17 @@ export default function JoinSquadPage({ params }: JoinSquadPageProps) {
               <span>👥</span>
               <span>Join Squad</span>
             </div>
-            <h1 className="text-2xl font-bold">Join this Squad</h1>
+            <h1 className="text-2xl font-bold">
+              {isMockSquad ? `Join ${mockSquad.name}` : "Join this Squad"}
+            </h1>
             <p className="mt-1 text-sm opacity-90">
-              Become part of the accountability crew
+              {isMockSquad
+                ? `${mockSquad.memberCount.toLocaleString()} members • $${mockSquad.entryStake} entry stake`
+                : "Become part of the accountability crew"}
             </p>
           </div>
           <Link
-            href={`/squads/${params.id}`}
+            href={`/squads/${squadId}`}
             className="rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/30"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -87,15 +118,26 @@ export default function JoinSquadPage({ params }: JoinSquadPageProps) {
           </li>
         </ul>
 
-        {/* Stakes Info (placeholder - can be populated from squad data) */}
+        {/* Stakes Info */}
         <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
           <div className="flex items-start gap-3">
             <DollarSign className="h-5 w-5 text-amber-600" />
             <div>
-              <p className="font-semibold text-amber-900">No entry fee</p>
-              <p className="mt-1 text-sm text-amber-700">
-                This squad is free to join. Start building accountability today!
-              </p>
+              {isMockSquad && mockSquad.entryStake > 0 ? (
+                <>
+                  <p className="font-semibold text-amber-900">${mockSquad.entryStake} entry stake</p>
+                  <p className="mt-1 text-sm text-amber-700">
+                    Pool size: ${(mockSquad.totalPool / 1000).toFixed(0)}K • {mockSquad.checkInRate}% success rate
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="font-semibold text-amber-900">No entry fee</p>
+                  <p className="mt-1 text-sm text-amber-700">
+                    This squad is free to join. Start building accountability today!
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -112,10 +154,10 @@ export default function JoinSquadPage({ params }: JoinSquadPageProps) {
             disabled={joining}
             className="flex-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:shadow-md active:scale-95 disabled:opacity-60"
           >
-            {joining ? "Joining..." : "Join Squad"}
+            {joining ? "Joining..." : isMockSquad ? `Join for $${mockSquad.entryStake}` : "Join Squad"}
           </button>
           <Link
-            href={`/squads/${params.id}`}
+            href={`/squads/${squadId}`}
             className="rounded-full border-2 border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
           >
             Cancel

@@ -2,14 +2,16 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Users, TrendingUp, MessageCircle, Settings } from "lucide-react";
+import { allSquads } from "@/data/mockSquadsFull";
 
 export const dynamic = "force-dynamic";
 
 type SquadPageProps = {
-  params: { id: string };
+  params: Promise<{ id: string }> | { id: string };
 };
 
 export default async function SquadDetailPage({ params }: SquadPageProps) {
+  const { id } = await Promise.resolve(params);
   const supabase = await createClient();
 
   const {
@@ -20,45 +22,91 @@ export default async function SquadDetailPage({ params }: SquadPageProps) {
     notFound();
   }
 
-  // Fetch squad details
-  const { data: squad, error: squadError } = await supabase
-    .from("squads")
-    .select("*")
-    .eq("id", params.id)
-    .single();
+  // First check if this is a mock squad
+  const mockSquad = allSquads.find((s) => s.id === id);
 
-  if (squadError || !squad) {
-    console.error("Squad fetch error:", squadError);
-    notFound();
+  let squad: any;
+  let isMockSquad = false;
+
+  if (mockSquad) {
+    // Use mock data
+    isMockSquad = true;
+    squad = {
+      id: mockSquad.id,
+      name: mockSquad.name,
+      description: mockSquad.description,
+      member_count: mockSquad.memberCount,
+      is_public: true,
+      created_at: new Date().toISOString(),
+      invite_code: null,
+      emoji: mockSquad.emoji,
+      entry_stake: mockSquad.entryStake,
+      total_pool: mockSquad.totalPool,
+      top_habits: mockSquad.topHabits,
+      check_in_rate: mockSquad.checkInRate,
+      member_avatars: mockSquad.memberAvatars,
+    };
+  } else {
+    // Fetch squad details from database
+    const { data: dbSquad, error: squadError } = await supabase
+      .from("squads")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (squadError || !dbSquad) {
+      console.error("Squad fetch error:", squadError);
+      notFound();
+    }
+    squad = dbSquad;
   }
 
-  // Check if user is a member
-  const { data: membership } = await supabase
-    .from("squad_members")
-    .select("role, joined_at")
-    .eq("squad_id", params.id)
-    .eq("user_id", user.id)
-    .single();
+  let membersList: { userId: string; role: string; username: string; avatarUrl: string | null; joinedAt: string }[] = [];
+  let isMember = false;
+  let isAdmin = false;
 
-  // Fetch squad members
-  const { data: members } = await supabase
-    .from("squad_members")
-    .select("user_id, role, joined_at, profile:profiles(username, avatar_url)")
-    .eq("squad_id", params.id)
-    .order("joined_at", { ascending: true })
-    .limit(20);
+  if (isMockSquad) {
+    // Generate mock members from avatars
+    const mockAvatars = squad.member_avatars || [];
+    membersList = mockAvatars.map((initials: string, index: number) => ({
+      userId: `mock-${index}`,
+      role: index === 0 ? "admin" : "member",
+      username: initials,
+      avatarUrl: null,
+      joinedAt: new Date(Date.now() - index * 86400000).toISOString(),
+    }));
+    // User is not a member of mock squads by default
+    isMember = false;
+    isAdmin = false;
+  } else {
+    // Check if user is a member
+    const { data: membership } = await supabase
+      .from("squad_members")
+      .select("role, joined_at")
+      .eq("squad_id", id)
+      .eq("user_id", user.id)
+      .single();
 
-  const membersList =
-    (members ?? []).map((m) => ({
-      userId: m.user_id,
-      role: m.role ?? "member",
-      username: (m as any).profile?.username ?? "Anonymous",
-      avatarUrl: (m as any).profile?.avatar_url ?? null,
-      joinedAt: m.joined_at,
-    })) ?? [];
+    // Fetch squad members
+    const { data: members } = await supabase
+      .from("squad_members")
+      .select("user_id, role, joined_at, profile:profiles(username, avatar_url)")
+      .eq("squad_id", id)
+      .order("joined_at", { ascending: true })
+      .limit(20);
 
-  const isMember = !!membership;
-  const isAdmin = membership?.role === "admin";
+    membersList =
+      (members ?? []).map((m) => ({
+        userId: m.user_id,
+        role: m.role ?? "member",
+        username: (m as any).profile?.username ?? "Anonymous",
+        avatarUrl: (m as any).profile?.avatar_url ?? null,
+        joinedAt: m.joined_at,
+      })) ?? [];
+
+    isMember = !!membership;
+    isAdmin = membership?.role === "admin";
+  }
 
   return (
     <div className="space-y-6">
@@ -92,7 +140,7 @@ export default async function SquadDetailPage({ params }: SquadPageProps) {
           </div>
           {isAdmin && (
             <Link
-              href={`/squads/${params.id}/settings`}
+              href={`/squads/${id}/settings`}
               className="rounded-full border-2 border-slate-300 bg-white p-2 transition hover:border-slate-400 hover:bg-slate-50"
             >
               <Settings className="h-5 w-5 text-slate-700" />
@@ -105,7 +153,7 @@ export default async function SquadDetailPage({ params }: SquadPageProps) {
           {isMember ? (
             <>
               <Link
-                href={`/squads/${params.id}/chat`}
+                href={`/squads/${id}/chat`}
                 className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
               >
                 <MessageCircle className="h-4 w-4" />
@@ -121,7 +169,7 @@ export default async function SquadDetailPage({ params }: SquadPageProps) {
             </>
           ) : (
             <Link
-              href={`/squads/${params.id}/join`}
+              href={`/squads/${id}/join`}
               className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
             >
               <Users className="h-4 w-4" />
