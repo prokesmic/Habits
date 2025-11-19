@@ -177,12 +177,12 @@ function SquadHero({ userHasSquads, squadCount }: { userHasSquads: boolean; squa
           >
             Create a squad
           </Link>
-          <button
-            onClick={() => {}}
+          <Link
+            href="/squads/join"
             className="inline-flex items-center justify-center rounded-full border border-white/50 bg-white/10 px-4 py-2 text-xs font-semibold text-white hover:bg-white/15"
           >
             Join with invite code
-          </button>
+          </Link>
           {userHasSquads && (
             <p className="text-[11px] opacity-80">
               You&apos;re already in{" "}
