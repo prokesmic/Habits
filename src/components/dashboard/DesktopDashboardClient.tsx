@@ -9,6 +9,14 @@ import { StreakRiskBanner } from './StreakRiskBanner';
 import { StreakFreezeCard } from './StreakFreezeCard';
 import { StakesCard } from './StakesCard';
 import { DailyRewardsCard } from './DailyRewardsCard';
+import {
+  NoHabitsToday,
+  NoActivityToday,
+  AllHabitsCompleted,
+  WelcomeNewUser,
+  MissedStreak
+} from '@/components/ui/EmptyStates';
+import { QuickActions, DashboardQuickActionsHero } from './QuickActions';
 
 type HabitStatus = "due" | "done";
 
@@ -34,14 +42,6 @@ interface SquadActivity {
   streakLabel?: string;
   avatarBg: string;
   photoUrl?: string;
-}
-
-interface QuickAction {
-  id: string;
-  label: string;
-  icon: string;
-  helperLabel?: string;
-  onClick?: () => void;
 }
 
 // Original prop interfaces (from server component)
@@ -87,6 +87,10 @@ interface DesktopDashboardClientProps {
   achievements: { id: string; name: string; emoji: string }[];
   stakes: { count: number; totalAmount: number } | null;
   squadActiveNow: number;
+  hasSquads?: boolean;
+  hasChallenges?: boolean;
+  isNewUser?: boolean;
+  daysMissed?: number;
 }
 
 export const DesktopDashboardClient = ({
@@ -94,7 +98,11 @@ export const DesktopDashboardClient = ({
   habits: initialHabits,
   activities,
   stakes,
-  squadActiveNow
+  squadActiveNow,
+  hasSquads = false,
+  hasChallenges = false,
+  isNewUser = false,
+  daysMissed = 0
 }: DesktopDashboardClientProps) => {
   const router = useRouter();
   const [habits, setHabits] = useState(initialHabits);
@@ -204,28 +212,6 @@ export const DesktopDashboardClient = ({
     };
   });
 
-  const quickActions: QuickAction[] = [
-    {
-      id: "qa1",
-      label: "Create a new habit",
-      icon: "➕",
-      helperLabel: "30s",
-      onClick: () => router.push('/habits/new')
-    },
-    {
-      id: "qa2",
-      label: "Invite a friend to your squad",
-      icon: "📨",
-      onClick: () => router.push('/squads')
-    },
-    {
-      id: "qa3",
-      label: "Start a 7-day challenge",
-      icon: "🏁",
-      onClick: () => router.push('/challenges')
-    },
-  ];
-
   const habitsCompletedToday = todaysHabits.filter(h => h.status === "done").length;
   const totalHabitsToday = todaysHabits.length;
   const firstIncompleteHabit = todaysHabits.find(h => h.status === "due");
@@ -332,16 +318,20 @@ export const DesktopDashboardClient = ({
               </p>
             </div>
 
-            {todaysHabits.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
-                <p className="text-slate-500 mb-4">No habits yet</p>
-                <Link
-                  href="/habits/new"
-                  className="inline-flex items-center justify-center rounded-full bg-amber-500 px-4 py-2 text-sm font-semibold text-white"
-                >
-                  Create your first habit
-                </Link>
-              </div>
+            {/* Empty States */}
+            {isNewUser && todaysHabits.length === 0 ? (
+              <WelcomeNewUser userName={user.firstName} />
+            ) : daysMissed > 1 && todaysHabits.length > 0 ? (
+              <MissedStreak daysLost={daysMissed} className="mb-4" />
+            ) : null}
+
+            {/* All completed celebration */}
+            {todaysHabits.length > 0 && habitsCompletedToday === totalHabitsToday && (
+              <AllHabitsCompleted className="mb-4" />
+            )}
+
+            {todaysHabits.length === 0 && !isNewUser ? (
+              <NoHabitsToday />
             ) : (
               todaysHabits.map((habit) => (
                 <HabitCard
@@ -379,31 +369,16 @@ export const DesktopDashboardClient = ({
               </div>
 
               {squadActivities.length === 0 && (
-                <div className="text-center py-4 text-slate-500">
-                  <p className="text-xs">No activity yet</p>
-                  <Link
-                    href="/squads"
-                    className="text-xs text-amber-600 font-medium mt-1 inline-block"
-                  >
-                    Invite friends
-                  </Link>
-                </div>
+                <NoActivityToday />
               )}
             </div>
 
-            {/* Quick Actions */}
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4">
-              <h2 className="text-sm font-semibold text-slate-900">
-                Quick Actions
-              </h2>
-              <p className="mt-1 text-xs text-slate-500">
-                Shortcuts to keep you and your squad moving.
-              </p>
-              <div className="mt-3 space-y-2 text-sm">
-                {quickActions.map((qa) => (
-                  <QuickActionItem key={qa.id} action={qa} />
-                ))}
-              </div>
+            {/* Quick Actions - Contextual based on user state */}
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-900/5">
+              <QuickActions
+                hasSquads={hasSquads}
+                hasChallenges={hasChallenges}
+              />
             </div>
 
             {/* Stakes Card - Prominent monetization feature */}
@@ -564,23 +539,5 @@ function SquadActivityItem({ activity }: { activity: SquadActivity }) {
         />
       )}
     </div>
-  );
-}
-
-function QuickActionItem({ action }: { action: QuickAction }) {
-  return (
-    <button
-      className="flex w-full items-center justify-between rounded-xl bg-white px-3 py-2 text-left text-slate-800 shadow-sm shadow-slate-900/5 hover:bg-slate-50"
-      onClick={action.onClick}
-      type="button"
-    >
-      <span className="flex items-center gap-2">
-        <span>{action.icon}</span>
-        <span>{action.label}</span>
-      </span>
-      {action.helperLabel && (
-        <span className="text-xs text-slate-600">{action.helperLabel}</span>
-      )}
-    </button>
   );
 }

@@ -290,20 +290,48 @@ function YourSquadsRow({ squads }: { squads: Squad[] }) {
 /* ===== FILTERS BAR ===== */
 
 function SquadFiltersBar() {
-  const filters = [
+  const categories = [
+    { label: "All", emoji: "✨" },
+    { label: "Fitness", emoji: "💪" },
+    { label: "Reading", emoji: "📚" },
+    { label: "Mindfulness", emoji: "🧘" },
+    { label: "Productivity", emoji: "⚡" },
+    { label: "Health", emoji: "🥗" },
+    { label: "Learning", emoji: "🎯" },
+  ];
+
+  const sortOptions = [
     "Trending",
     "New",
-    "Friends",
-    "Local",
     "High stakes",
+    "Most active",
     "Beginner friendly",
   ];
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="space-y-3">
+      {/* Categories */}
       <div className="flex flex-wrap gap-2">
-        <span className="text-xs font-medium text-slate-500">Filter:</span>
-        {filters.map((label, idx) => (
+        <span className="text-xs font-medium text-slate-500 self-center">Focus:</span>
+        {categories.map((cat, idx) => (
+          <button
+            key={cat.label}
+            className={
+              idx === 0
+                ? "rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white flex items-center gap-1"
+                : "rounded-full bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm shadow-slate-900/5 hover:bg-slate-50 flex items-center gap-1"
+            }
+          >
+            <span>{cat.emoji}</span>
+            <span>{cat.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Sort Options */}
+      <div className="flex flex-wrap gap-2">
+        <span className="text-xs font-medium text-slate-500 self-center">Sort:</span>
+        {sortOptions.map((label, idx) => (
           <button
             key={label}
             className={

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Calendar, Users, Compass, Trophy, User, Plus } from "lucide-react";
+import { Calendar, Users, Trophy, User, Plus } from "lucide-react";
 import { clsx } from "clsx";
 
 type NavItem = {

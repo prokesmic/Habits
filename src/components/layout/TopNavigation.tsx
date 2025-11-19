@@ -37,12 +37,6 @@ const mainNavItems = [
     description: "Your accountability squads",
   },
   {
-    label: "Discover",
-    href: "/discover",
-    icon: Compass,
-    description: "Find habits and challenges",
-  },
-  {
     label: "Challenges",
     href: "/challenges",
     icon: Trophy,
