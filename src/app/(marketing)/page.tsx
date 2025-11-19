@@ -173,7 +173,7 @@ export default function LandingPage() {
               </div>
 
               {/* Toast */}
-              <div className="absolute bottom-4 right-3 z-20 -translate-y-1/2 rounded-full bg-indigo-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-indigo-500/40">
+              <div className="absolute bottom-6 right-3 z-20 -translate-y-1/2 rounded-full bg-indigo-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-indigo-500/40">
                 Sarah just checked in. Your turn?
               </div>
 
