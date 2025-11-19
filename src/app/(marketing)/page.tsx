@@ -92,9 +92,9 @@ export default function LandingPage() {
             </div>
 
             {/* Product preview */}
-            <div className="relative mx-auto w-full max-w-md">
+            <div className="relative mx-auto w-full max-w-md py-4 md:py-0">
               {/* Streak pill */}
-              <div className="absolute -left-3 top-10 z-20 rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-emerald-500/40">
+              <div className="absolute left-0 top-4 z-20 rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-emerald-500/40 md:-left-3 md:top-10">
                 30-day streak 🔥
               </div>
 
@@ -173,12 +173,12 @@ export default function LandingPage() {
               </div>
 
               {/* Toast */}
-              <div className="absolute -bottom-5 right-3 rounded-full bg-indigo-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-indigo-500/40">
+              <div className="absolute -bottom-2 right-3 z-20 rounded-full bg-indigo-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-indigo-500/40 md:-bottom-5">
                 Sarah just checked in. Your turn?
               </div>
 
               {/* Caption */}
-              <p className="mt-8 text-center text-xs text-slate-500">
+              <p className="mt-10 text-center text-xs text-slate-500 md:mt-8">
                 Product preview · Your daily accountability dashboard
               </p>
             </div>
