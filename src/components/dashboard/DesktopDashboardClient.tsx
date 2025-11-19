@@ -235,7 +235,7 @@ export const DesktopDashboardClient = ({
         )}
 
         {/* HEADER CARD */}
-        <section className="mb-6 rounded-3xl bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 p-5 text-white shadow-sm shadow-slate-900/10">
+        <section className="mb-6 rounded-card bg-gradient-hero p-5 text-white shadow-elevated">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             {/* Greeting */}
             <div>
@@ -294,7 +294,7 @@ export const DesktopDashboardClient = ({
                     handleCheckIn(firstIncompleteHabit.id);
                   }
                 }}
-                className="mt-2 inline-flex items-center justify-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-amber-600 shadow-sm shadow-slate-900/10 transition hover:bg-amber-50"
+                className="mt-2 inline-flex items-center justify-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-primary-600 shadow-soft transition hover:bg-primary-50"
               >
                 {habitsCompletedToday < totalHabitsToday
                   ? `Check in for "${firstIncompleteHabit?.name ?? "your next habit"}"`
@@ -346,14 +346,14 @@ export const DesktopDashboardClient = ({
           {/* RIGHT: SQUAD + QUICK ACTIONS */}
           <div className="space-y-4">
             {/* Squad Today */}
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-900/5">
+            <div className="rounded-inner border border-border-soft bg-white p-4 shadow-soft">
               <div className="mb-2 flex items-center justify-between">
                 <h2 className="text-sm font-semibold text-slate-900">
                   Squad Today
                 </h2>
                 <Link
                   href="/feed"
-                  className="text-xs font-medium text-amber-600 hover:text-amber-700"
+                  className="text-xs font-medium text-primary-600 hover:text-primary-700"
                 >
                   View all
                 </Link>
@@ -374,7 +374,7 @@ export const DesktopDashboardClient = ({
             </div>
 
             {/* Quick Actions - Contextual based on user state */}
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-900/5">
+            <div className="rounded-inner border border-border-soft bg-white p-4 shadow-soft">
               <QuickActions
                 hasSquads={hasSquads}
                 hasChallenges={hasChallenges}
@@ -419,22 +419,22 @@ function HabitCard({ habit, onCheckIn }: { habit: TransformedHabit; onCheckIn: (
 
   if (isDone) {
     return (
-      <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 shadow-sm shadow-emerald-200/60">
+      <div className="rounded-inner border border-success-200 bg-success-50/70 p-4 shadow-soft">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-500 text-lg">
+            <div className="flex h-9 w-9 items-center justify-center rounded-inner bg-success-500 text-lg">
               <span>{habit.emoji}</span>
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <Link href={`/habits/${habit.id}`} className="text-sm font-semibold text-emerald-950 hover:underline">
+                <Link href={`/habits/${habit.id}`} className="text-sm font-semibold text-success-950 hover:underline">
                   {habit.name}
                 </Link>
-                <span className="inline-flex items-center rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+                <span className="inline-flex items-center rounded-chip bg-white px-2 py-0.5 text-chip font-semibold text-success-700">
                   Done today
                 </span>
               </div>
-              <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-emerald-700">
+              <div className="mt-1 flex flex-wrap items-center gap-2 text-chip text-success-700">
                 <span className="inline-flex items-center gap-1">
                   🔥 <span>{habit.streakDays}-day streak</span>
                 </span>
@@ -446,7 +446,7 @@ function HabitCard({ habit, onCheckIn }: { habit: TransformedHabit; onCheckIn: (
               </div>
             </div>
           </div>
-          <button className="shrink-0 rounded-full border border-emerald-400 bg-white/70 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm hover:bg-white">
+          <button className="shrink-0 rounded-full border border-success-400 bg-white/70 px-4 py-2 text-sm font-semibold text-success-700 shadow-soft hover:bg-white transition-colors">
             View check-in
           </button>
         </div>
@@ -455,10 +455,10 @@ function HabitCard({ habit, onCheckIn }: { habit: TransformedHabit; onCheckIn: (
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-900/5">
+    <div className="rounded-inner border border-border-soft bg-white p-4 shadow-soft">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 to-indigo-500 text-lg">
+          <div className="flex h-9 w-9 items-center justify-center rounded-inner bg-gradient-badge text-lg">
             <span className="text-white">{habit.emoji}</span>
           </div>
           <div>
@@ -466,11 +466,11 @@ function HabitCard({ habit, onCheckIn }: { habit: TransformedHabit; onCheckIn: (
               <Link href={`/habits/${habit.id}`} className="text-sm font-semibold text-slate-900 hover:underline">
                 {habit.name}
               </Link>
-              <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
+              <span className="inline-flex items-center rounded-chip bg-primary-50 px-2 py-0.5 text-chip font-semibold text-primary-700">
                 Due today
               </span>
             </div>
-            <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
+            <div className="mt-1 flex flex-wrap items-center gap-2 text-chip text-slate-500">
               <span className="inline-flex items-center gap-1">
                 🔥 <span>{habit.streakDays}-day streak</span>
               </span>
@@ -489,7 +489,7 @@ function HabitCard({ habit, onCheckIn }: { habit: TransformedHabit; onCheckIn: (
         </div>
         <button
           onClick={onCheckIn}
-          className="shrink-0 rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-emerald-500/40 transition hover:bg-emerald-600 hover:shadow-md hover:shadow-emerald-500/50"
+          className="shrink-0 rounded-full bg-success-500 px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:bg-success-600 hover:shadow-elevated active:scale-95"
         >
           Check in
         </button>
