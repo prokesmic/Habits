@@ -98,6 +98,94 @@ export async function inviteBuddy(email: string) {
   return { success: true };
 }
 
+export async function joinSquad(squadId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  // Check if already a member
+  const { data: existing } = await supabase
+    .from("squad_members")
+    .select("id")
+    .eq("squad_id", squadId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (existing) {
+    return { success: true, alreadyMember: true };
+  }
+
+  // Add as member
+  const { error } = await supabase
+    .from("squad_members")
+    .insert({
+      squad_id: squadId,
+      user_id: user.id,
+      role: "member",
+    });
+
+  if (error) {
+    throw error;
+  }
+
+  // Create feed event
+  await supabase.from("feed_events").insert({
+    user_id: user.id,
+    event_type: "squad_join",
+    metadata: { squad_id: squadId },
+  });
+
+  revalidatePath(`/squads/${squadId}`);
+  revalidatePath("/squads");
+
+  return { success: true, alreadyMember: false };
+}
+
+export async function leaveSquad(squadId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  // Check if user is owner
+  const { data: membership } = await supabase
+    .from("squad_members")
+    .select("role")
+    .eq("squad_id", squadId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (membership?.role === "owner") {
+    throw new Error("Owner cannot leave squad. Transfer ownership first.");
+  }
+
+  const { error } = await supabase
+    .from("squad_members")
+    .delete()
+    .eq("squad_id", squadId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    throw error;
+  }
+
+  revalidatePath(`/squads/${squadId}`);
+  revalidatePath("/squads");
+
+  return { success: true };
+}
+
 export async function createSquad(name: string, description: string) {
   const supabase = await createClient();
   const {

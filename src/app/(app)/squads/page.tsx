@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { allSquads } from "@/data/mockSquadsFull";
+import { TriforceMetaLine, createQuickTriforceInfo } from "@/components/ui/TriforceBadges";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,9 @@ type Squad = {
   members: number;
   dailyCheckinsPercent: number;
   successPercent: number;
+  // Triforce: Challenge info (optional - squad may have active challenge)
+  challengeDays?: number;
+  // Triforce: Stake info (optional - challenge may have stakes)
   entryStake: number;
   poolAmount: number;
   topHabits: string[];
@@ -50,6 +54,8 @@ function transformSquadData(mockSquad: typeof allSquads[0]): Squad {
     members: mockSquad.memberCount,
     dailyCheckinsPercent: mockSquad.checkInRate,
     successPercent: mockSquad.checkInRate,
+    // Triforce: Default to 30-day challenge if there's a stake
+    challengeDays: mockSquad.entryStake > 0 ? 30 : undefined,
     entryStake: mockSquad.entryStake,
     poolAmount: mockSquad.totalPool,
     topHabits: mockSquad.topHabits,
@@ -391,15 +397,17 @@ function SquadCard({ squad }: { squad: Squad }) {
           </span>
         </div>
 
-        <div className="rounded-2xl bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
-          <div className="flex items-center justify-between">
-            <span>
-              ${squad.entryStake} entry stake
-            </span>
-            <span className="font-semibold">
-              ${squad.poolAmount.toLocaleString()} pool
-            </span>
-          </div>
+        {/* Triforce: Squad / Challenge / Stakes */}
+        <div className="rounded-2xl bg-slate-50 px-3 py-2">
+          <TriforceMetaLine
+            info={createQuickTriforceInfo({
+              squadName: squad.name,
+              memberCount: squad.members,
+              challengeDays: squad.challengeDays,
+              stakeAmount: squad.entryStake > 0 ? squad.entryStake : undefined,
+              totalPool: squad.poolAmount > 0 ? squad.poolAmount : undefined,
+            })}
+          />
         </div>
 
         <div className="space-y-1 text-xs">
@@ -423,7 +431,12 @@ function SquadCard({ squad }: { squad: Squad }) {
           href={squad.isJoined ? `/squads/${squad.id}` : `/squads/${squad.id}/join`}
           className="flex w-full items-center justify-center rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-indigo-500/40 hover:bg-indigo-700 transition"
         >
-          {squad.isJoined ? "View squad" : `Join for $${squad.entryStake}`}
+          {squad.isJoined
+            ? "View squad"
+            : squad.entryStake > 0
+              ? `Join challenge · $${squad.entryStake}`
+              : "Join squad"
+          }
         </Link>
       </div>
     </article>

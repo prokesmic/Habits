@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Squad } from "@/data/mockSquadsFull";
-import { Users, TrendingUp, DollarSign, Eye } from "lucide-react";
+import { Users, TrendingUp, Eye } from "lucide-react";
+import { TriforceBadges, createQuickTriforceInfo } from "@/components/ui/TriforceBadges";
 
 function getInitials(name: string): string {
   return name
@@ -67,17 +68,18 @@ export function EnhancedSquadCard({ squad, showPreview = true }: EnhancedSquadCa
           </div>
         </div>
         
-        {/* Stakes */}
-        <div className="mb-4 flex items-center justify-between rounded-xl border border-green-200 bg-green-50 px-3 py-2">
-          <div className="flex items-center gap-2">
-            <DollarSign className="h-4 w-4 text-green-600" />
-            <span className="text-sm font-semibold text-green-700">
-              ${squad.entryStake} entry stake
-            </span>
-          </div>
-          <span className="text-xs font-semibold text-green-700">
-            ${(squad.totalPool / 1000).toFixed(0)}K pool
-          </span>
+        {/* Triforce badges - shows squad/challenge/stake info */}
+        <div className="mb-4 rounded-xl bg-slate-50 px-3 py-2">
+          <TriforceBadges
+            info={createQuickTriforceInfo({
+              squadName: squad.name,
+              memberCount: squad.memberCount,
+              // Only show stake if there's actually a stake attached
+              stakeAmount: squad.entryStake > 0 ? squad.entryStake : undefined,
+              totalPool: squad.totalPool > 0 ? squad.totalPool : undefined,
+            })}
+            variant="inline"
+          />
         </div>
         
         {/* Top habits */}
@@ -124,7 +126,7 @@ export function EnhancedSquadCard({ squad, showPreview = true }: EnhancedSquadCa
             href={`/squads/${squad.id}/join`}
             className="flex-1 rounded-full bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-blue-700"
           >
-            Join for ${squad.entryStake}
+            {squad.entryStake > 0 ? `Join challenge · $${squad.entryStake}` : "Join squad"}
           </Link>
           {showPreview && (
             <Link
