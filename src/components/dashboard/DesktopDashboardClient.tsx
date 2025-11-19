@@ -452,9 +452,9 @@ function HabitCard({ habit, onCheckIn }: { habit: TransformedHabit; onCheckIn: (
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <p className="text-sm font-semibold text-emerald-950">
+                <Link href={`/habits/${habit.id}`} className="text-sm font-semibold text-emerald-950 hover:underline">
                   {habit.name}
-                </p>
+                </Link>
                 <span className="inline-flex items-center rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
                   Done today
                 </span>
@@ -488,9 +488,9 @@ function HabitCard({ habit, onCheckIn }: { habit: TransformedHabit; onCheckIn: (
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <p className="text-sm font-semibold text-slate-900">
+              <Link href={`/habits/${habit.id}`} className="text-sm font-semibold text-slate-900 hover:underline">
                 {habit.name}
-              </p>
+              </Link>
               <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
                 Due today
               </span>

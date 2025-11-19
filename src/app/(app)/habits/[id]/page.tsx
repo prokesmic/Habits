@@ -1,103 +1,246 @@
-import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { CheckInCard } from "@/components/cards/CheckInCard";
+import { Archive, Trash2, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
-export const dynamic = "force-dynamic";
-
-type HabitPageProps = {
-  params: Promise<{ id: string }> | { id: string };
+type Habit = {
+  id: string;
+  title: string;
+  emoji: string | null;
+  description: string | null;
+  frequency: string;
+  target_days_per_week: number;
+  archived: boolean;
 };
 
-export default async function HabitDetailPage({ params }: HabitPageProps) {
-  // Await params if it's a Promise (Next.js 15+)
-  const { id } = await Promise.resolve(params);
-  
-  const supabase = await createClient();
-  
-  // Check authentication first
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+type ParsedLog = {
+  id: string;
+  note: string | null;
+  streak_count: number | null;
+  habit: { title: string; emoji: string | null };
+  user: { username: string };
+  reactions?: Array<{ reaction_type: string; count: number }>;
+};
 
-  if (authError || !user) {
-    notFound();
+export default function HabitDetailPage({ params }: { params: Promise<{ id: string }> | { id: string } }) {
+  const router = useRouter();
+  const [habit, setHabit] = useState<Habit | null>(null);
+  const [logs, setLogs] = useState<ParsedLog[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  useEffect(() => {
+    async function loadHabit() {
+      const { id } = await Promise.resolve(params);
+      const supabase = createClient();
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push("/auth/sign-in");
+        return;
+      }
+
+      const { data: habitData, error: habitError } = await supabase
+        .from("habits")
+        .select("id, title, emoji, description, frequency, target_days_per_week, user_id, archived")
+        .eq("id", id)
+        .single();
+
+      if (habitError || !habitData || habitData.user_id !== user.id) {
+        router.push("/dashboard");
+        return;
+      }
+
+      setHabit(habitData);
+
+      const { data: logsData } = await supabase
+        .from("habit_logs")
+        .select(
+          "id, note, streak_count, created_at, status, habit:habits(title, emoji), user:profiles(username)"
+        )
+        .eq("habit_id", id)
+        .order("log_date", { ascending: false })
+        .limit(20);
+
+      const parsedLogs = (logsData ?? []).map((log) => ({
+        id: String(log.id),
+        note: (log.note as string) ?? null,
+        streak_count: typeof log.streak_count === "number" ? log.streak_count : null,
+        habit: {
+          title: (log as any).habit?.title ?? habitData.title,
+          emoji: (log as any).habit?.emoji ?? habitData.emoji ?? null,
+        },
+        user: {
+          username: (log as any).user?.username ?? "Anonymous",
+        },
+        reactions: (log as any).reactions,
+      }));
+
+      setLogs(parsedLogs);
+      setLoading(false);
+    }
+
+    loadHabit();
+  }, [params, router]);
+
+  async function handleArchive() {
+    if (!habit) return;
+    setActionLoading(true);
+
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("habits")
+      .update({ archived: !habit.archived })
+      .eq("id", habit.id);
+
+    if (error) {
+      alert("Failed to update habit");
+    } else {
+      if (!habit.archived) {
+        router.push("/dashboard");
+      } else {
+        setHabit({ ...habit, archived: !habit.archived });
+      }
+    }
+    setActionLoading(false);
   }
 
-  const { data: habit, error: habitError } = await supabase
-    .from("habits")
-    .select("id, title, emoji, description, frequency, target_days_per_week, user_id")
-    .eq("id", id)
-    .single();
+  async function handleDelete() {
+    if (!habit) return;
+    setActionLoading(true);
 
-  if (habitError || !habit) {
-    console.error("Habit fetch error:", habitError);
-    notFound();
+    const supabase = createClient();
+
+    // Delete habit logs first
+    await supabase
+      .from("habit_logs")
+      .delete()
+      .eq("habit_id", habit.id);
+
+    // Then delete the habit
+    const { error } = await supabase
+      .from("habits")
+      .delete()
+      .eq("id", habit.id);
+
+    if (error) {
+      alert("Failed to delete habit");
+      setActionLoading(false);
+    } else {
+      router.push("/dashboard");
+    }
   }
 
-  // Check if user owns this habit
-  if (habit.user_id !== user.id) {
-    notFound();
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600" />
+      </div>
+    );
   }
 
-  const { data: logs, error: logsError } = await supabase
-    .from("habit_logs")
-    .select(
-      "id, note, streak_count, created_at, status, habit:habits(title, emoji), user:profiles(username)",
-    )
-    .eq("habit_id", habit.id)
-    .order("log_date", { ascending: false })
-    .limit(20);
-
-  if (logsError) {
-    console.error("Logs fetch error:", logsError);
+  if (!habit) {
+    return null;
   }
-
-  const parsedLogs =
-    (logs ?? []).map((log) => ({
-      id: String(log.id),
-      note: (log.note as string) ?? null,
-      streak_count: typeof log.streak_count === "number" ? log.streak_count : null,
-      habit: {
-        title: (log as any).habit?.title ?? habit.title,
-        emoji: (log as any).habit?.emoji ?? habit.emoji ?? null,
-      },
-      user: {
-        username: (log as any).user?.username ?? "Anonymous",
-      },
-      reactions: (log as any).reactions,
-    })) as Array<{
-      id: string;
-      note: string | null;
-      streak_count: number | null;
-      habit: { title: string; emoji: string | null };
-      user: { username: string };
-      reactions?: Array<{ reaction_type: string; count: number }>;
-    }>;
 
   return (
     <div className="space-y-6">
+      {/* Back link */}
+      <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900">
+        <ArrowLeft className="h-4 w-4" />
+        Back to Dashboard
+      </Link>
+
+      {/* Header */}
       <header className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-xs uppercase tracking-wide text-slate-600">Habit</p>
-        <h1 className="mt-2 text-3xl font-semibold text-slate-900">
-          {habit.emoji ?? "✅"} {habit.title}
-        </h1>
-        <p className="mt-3 text-sm text-slate-600">{habit.description}</p>
-        <div className="mt-4 flex gap-4 text-xs uppercase tracking-wide text-slate-600">
-          <span>{habit.frequency}</span>
-          <span>Target {habit.target_days_per_week}/week</span>
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-wide text-slate-600">Habit</p>
+            <h1 className="mt-2 text-3xl font-semibold text-slate-900">
+              {habit.emoji ?? "✅"} {habit.title}
+            </h1>
+            {habit.description && (
+              <p className="mt-3 text-sm text-slate-600">{habit.description}</p>
+            )}
+            <div className="mt-4 flex gap-4 text-xs uppercase tracking-wide text-slate-600">
+              <span>{habit.frequency}</span>
+              <span>Target {habit.target_days_per_week}/week</span>
+            </div>
+            {habit.archived && (
+              <div className="mt-3 inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
+                Archived
+              </div>
+            )}
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-2">
+            <button
+              onClick={handleArchive}
+              disabled={actionLoading}
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+            >
+              <Archive className="h-4 w-4" />
+              {habit.archived ? "Restore" : "Archive"}
+            </button>
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              disabled={actionLoading}
+              className="inline-flex items-center gap-2 rounded-lg border border-red-200 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50 disabled:opacity-50"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </button>
+          </div>
         </div>
       </header>
+
+      {/* Delete confirmation modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-slate-900">Delete Habit?</h3>
+            <p className="mt-2 text-sm text-slate-600">
+              This will permanently delete "{habit.title}" and all {logs.length} check-in logs. This action cannot be undone.
+            </p>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={actionLoading}
+                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                {actionLoading ? "Deleting..." : "Delete Permanently"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Recent check-ins */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">Recent check-ins</h2>
-          <button className="rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-blue-700">
+          <button
+            onClick={() => alert("Check-in modal coming soon!")}
+            className="rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-blue-700"
+          >
             Check in now
           </button>
         </div>
-        {parsedLogs.length ? (
+        {logs.length ? (
           <div className="space-y-3">
-            {parsedLogs.map((log) => (
+            {logs.map((log) => (
               <CheckInCard key={log.id} log={log} />
             ))}
           </div>
@@ -110,4 +253,3 @@ export default async function HabitDetailPage({ params }: HabitPageProps) {
     </div>
   );
 }
-
