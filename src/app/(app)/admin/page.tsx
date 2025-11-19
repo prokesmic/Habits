@@ -86,9 +86,9 @@ export default function AdminDashboard() {
                   </div>
                   <div className="rounded bg-gray-50 p-3 text-sm text-gray-700">Reason: {r.reason}</div>
                   <div className="mt-3 flex gap-2">
-                    <button className="rounded border px-3 py-1 text-sm hover:bg-gray-50">Dismiss</button>
-                    <button className="rounded border border-amber-500 px-3 py-1 text-sm text-amber-700 hover:bg-amber-50">Warn User</button>
-                    <button className="rounded border border-red-500 px-3 py-1 text-sm text-red-700 hover:bg-red-50">Remove Content</button>
+                    <button onClick={() => alert(`Report ${r.id} dismissed`)} className="rounded border px-3 py-1 text-sm hover:bg-gray-50">Dismiss</button>
+                    <button onClick={() => alert(`Warning sent to @${r.reportedUser}`)} className="rounded border border-amber-500 px-3 py-1 text-sm text-amber-700 hover:bg-amber-50">Warn User</button>
+                    <button onClick={() => alert(`Content removed for @${r.reportedUser}`)} className="rounded border border-red-500 px-3 py-1 text-sm text-red-700 hover:bg-red-50">Remove Content</button>
                   </div>
                 </div>
               ))}

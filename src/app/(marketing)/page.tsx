@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 
@@ -70,7 +72,10 @@ export default function LandingPage() {
                 >
                   Start Your First Habit
                 </Link>
-                <button className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-slate-300 hover:bg-slate-50">
+                <button
+                  onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
+                >
                   See How It Works
                 </button>
               </div>
@@ -225,7 +230,7 @@ export default function LandingPage() {
         </section>
 
         {/* HOW IT WORKS */}
-        <section className="bg-slate-50/70">
+        <section id="how-it-works" className="bg-slate-50/70">
           <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
             <div className="text-center">
               <h2 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">

@@ -25,7 +25,7 @@ export default function ExperimentDashboard() {
       <div className="mx-auto max-w-5xl space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Experiments</h1>
-          <button className="rounded-lg bg-violet-600 px-4 py-2 text-white">Create Experiment</button>
+          <button onClick={() => alert('Create Experiment form coming soon!')} className="rounded-lg bg-violet-600 px-4 py-2 text-white hover:bg-violet-700">Create Experiment</button>
         </div>
         <div className="space-y-4">
           {experiments.map((exp) => (

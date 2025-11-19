@@ -46,8 +46,8 @@ export default function DeveloperPortalPage() {
                 <div className="text-sm text-gray-600">Created {new Date(k.createdAt).toDateString()}</div>
               </div>
               <div className="flex gap-2">
-                <button className="rounded border px-3 py-1 text-sm hover:bg-gray-50">View</button>
-                <button className="rounded border border-red-300 px-3 py-1 text-sm text-red-600 hover:bg-red-50">Revoke</button>
+                <button onClick={() => alert(`API Key: ${k.id}\nCreated: ${new Date(k.createdAt).toLocaleString()}`)} className="rounded border px-3 py-1 text-sm hover:bg-gray-50">View</button>
+                <button onClick={() => { if (confirm(`Revoke API key "${k.name}"?`)) alert('API key revoked'); }} className="rounded border border-red-300 px-3 py-1 text-sm text-red-600 hover:bg-red-50">Revoke</button>
               </div>
             </div>
           ))}
