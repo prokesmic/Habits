@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import type { TriforceInfo } from "@/types/triforce";
 
@@ -138,7 +139,7 @@ export function TriforceMetaLine({
   info: TriforceInfo;
   className?: string;
 }) {
-  const parts: React.ReactNode[] = [];
+  const parts: ReactNode[] = [];
 
   if (info.hasSquad) {
     parts.push(
@@ -168,7 +169,7 @@ export function TriforceMetaLine({
   }
 
   // Join with separators
-  const elements: React.ReactNode[] = [];
+  const elements: ReactNode[] = [];
   parts.forEach((part, i) => {
     if (i > 0) {
       elements.push(
