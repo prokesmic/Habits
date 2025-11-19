@@ -27,7 +27,7 @@ export function InstallPrompt() {
   if (!showPrompt) return null;
 
   return (
-    <div className="fixed bottom-20 left-4 right-4 z-50 rounded-xl border-2 border-orange-500 bg-white p-6 shadow-2xl md:left-auto md:right-4 md:w-96">
+    <div className="fixed bottom-24 left-4 right-4 z-[60] rounded-xl border-2 border-orange-500 bg-white p-6 shadow-2xl md:bottom-6 md:left-auto md:right-4 md:w-96">
       <button
         onClick={() => setShowPrompt(false)}
         className="absolute right-2 top-2 text-gray-600 hover:text-gray-700"
