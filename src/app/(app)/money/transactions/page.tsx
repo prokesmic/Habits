@@ -7,16 +7,25 @@ export default function TransactionsPage() {
 
   return (
     <div className="space-y-6">
-      <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Transactions</h1>
-          <p className="text-sm text-slate-500">Stakes, winnings, payouts, and fees</p>
+      {/* Hero Header */}
+      <section className="rounded-3xl bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 p-6 text-white shadow-sm shadow-slate-900/10">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
+              <span>💰</span>
+              <span>Money</span>
+            </span>
+            <div>
+              <h1 className="text-2xl font-semibold md:text-3xl">Transactions</h1>
+              <p className="mt-1 text-sm opacity-95">Stakes, winnings, payouts, and fees</p>
+            </div>
+          </div>
+          <div className="rounded-2xl bg-white/20 px-4 py-2 text-sm font-semibold">
+            Net: ${balance}
+          </div>
         </div>
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
-          Net: ${balance}
-        </div>
-      </header>
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      </section>
+      <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-900/5">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-slate-500">

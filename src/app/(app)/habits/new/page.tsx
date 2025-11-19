@@ -37,8 +37,8 @@ export default function NewHabitPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      {/* Header */}
-      <section className="rounded-3xl bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 p-6 text-white shadow-sm">
+      {/* Hero Header */}
+      <section className="rounded-3xl bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 p-6 text-white shadow-sm shadow-slate-900/10">
         <div className="flex items-center justify-between">
           <div>
             <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">

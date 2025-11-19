@@ -1,10 +1,22 @@
 export default function ReferralDetailsPage() {
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold text-slate-900">Referral Program</h1>
-      </header>
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      {/* Hero Header */}
+      <section className="rounded-3xl bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 p-6 text-white shadow-sm shadow-slate-900/10">
+        <div className="space-y-2">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
+            <span>🎁</span>
+            <span>Invite Friends</span>
+          </span>
+          <div>
+            <h1 className="text-2xl font-semibold md:text-3xl">Referral Program</h1>
+            <p className="mt-1 text-sm md:text-base opacity-95">
+              Invite friends and earn rewards together
+            </p>
+          </div>
+        </div>
+      </section>
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/5">
         <h2 className="text-lg font-semibold text-slate-900">How it works</h2>
         <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-slate-700">
           <li>Share your unique link</li>
@@ -14,7 +26,7 @@ export default function ReferralDetailsPage() {
           <li>No limit on referrals!</li>
         </ol>
       </section>
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/5">
         <h2 className="text-lg font-semibold text-slate-900">Your Stats</h2>
         <div className="mt-3 grid gap-3 sm:grid-cols-4">
           <div className="rounded-xl border border-slate-200 p-3">
@@ -35,7 +47,7 @@ export default function ReferralDetailsPage() {
           </div>
         </div>
       </section>
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/5">
         <h2 className="text-lg font-semibold text-slate-900">Recent Referrals</h2>
         <ul className="mt-3 space-y-3 text-sm text-slate-700">
           <li>

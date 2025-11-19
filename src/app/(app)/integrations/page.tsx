@@ -43,14 +43,27 @@ export default function IntegrationsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Integrations</h1>
-      <p className="text-gray-600">Connect your favorite apps to make habit tracking effortless</p>
+      {/* Hero Header */}
+      <section className="rounded-3xl bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 p-6 text-white shadow-sm shadow-slate-900/10">
+        <div className="space-y-2">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
+            <span>🔗</span>
+            <span>Connect Apps</span>
+          </span>
+          <div>
+            <h1 className="text-2xl font-semibold md:text-3xl">Integrations</h1>
+            <p className="mt-1 text-sm md:text-base opacity-95">
+              Connect your favorite apps to make habit tracking effortless
+            </p>
+          </div>
+        </div>
+      </section>
       <div className="grid gap-4 md:grid-cols-2">
         {available.map((int) => {
           const connected = isConnected(int.provider);
           const integ = connectedIntegration(int.provider);
           return (
-            <div key={int.provider} className="rounded-lg border bg-white p-6">
+            <div key={int.provider} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/5">
               <div className="mb-4 flex items-start gap-4">
                 <div className="text-4xl">{int.icon}</div>
                 <div className="flex-1">
@@ -87,7 +100,7 @@ export default function IntegrationsPage() {
                   </div>
                 </div>
               ) : (
-                <button onClick={() => handleConnect(int.provider)} className="w-full rounded-lg bg-violet-600 px-4 py-2 text-white hover:bg-violet-700">
+                <button onClick={() => handleConnect(int.provider)} className="w-full rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-indigo-500/40 transition hover:bg-indigo-700">
                   Connect {int.name}
                 </button>
               )}

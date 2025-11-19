@@ -26,32 +26,40 @@ export default async function ChallengeDetailPage({ params }: ChallengePageProps
 
   return (
     <div className="space-y-6">
-      <header className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-xs uppercase tracking-wide text-slate-600">Challenge</p>
-        <h1 className="mt-2 text-3xl font-semibold text-slate-900">{challenge.name}</h1>
-        <p className="mt-3 text-sm text-slate-600">
-          {challenge.description ?? "Compete with your squad and keep consistency high."}
-        </p>
-        <div className="mt-4 flex flex-wrap gap-4 text-xs uppercase tracking-wide text-slate-600">
-          <span>{challenge.challenge_format}</span>
-          <span>
-            {challenge.duration_days} days • target {challenge.target_completions}
+      {/* Hero Header */}
+      <header className="rounded-3xl bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 p-6 text-white shadow-sm shadow-slate-900/10">
+        <div className="space-y-2">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
+            <span>🏆</span>
+            <span>Challenge</span>
           </span>
-          <span>{challenge.participant_count} participants</span>
-          <span>Status: {challenge.status}</span>
-        </div>
-        {challenge.stake ? (
-          <div className="mt-4 rounded-2xl border border-yellow-200 bg-yellow-50 px-3 py-2 text-sm font-semibold text-yellow-800">
-            💰 €{(challenge.stake.amount_cents / 100).toFixed(2)} stake • Fee{" "}
-            {challenge.stake.platform_fee_percent ?? 7.5}%
+          <div>
+            <h1 className="text-2xl font-semibold md:text-3xl">{challenge.name}</h1>
+            <p className="mt-1 text-sm md:text-base opacity-95">
+              {challenge.description ?? "Compete with your squad and keep consistency high."}
+            </p>
           </div>
-        ) : null}
+          <div className="flex flex-wrap gap-3 text-xs">
+            <span className="rounded-full bg-white/20 px-3 py-1 font-medium">{challenge.challenge_format}</span>
+            <span className="rounded-full bg-white/20 px-3 py-1 font-medium">
+              {challenge.duration_days} days • target {challenge.target_completions}
+            </span>
+            <span className="rounded-full bg-white/20 px-3 py-1 font-medium">{challenge.participant_count} participants</span>
+            <span className="rounded-full bg-white/20 px-3 py-1 font-medium capitalize">{challenge.status}</span>
+          </div>
+          {challenge.stake && (
+            <div className="mt-2 inline-flex items-center rounded-full bg-amber-200 px-4 py-2 text-sm font-semibold text-amber-900">
+              💰 €{(challenge.stake.amount_cents / 100).toFixed(2)} stake • Fee{" "}
+              {challenge.stake.platform_fee_percent ?? 7.5}%
+            </div>
+          )}
+        </div>
       </header>
 
-      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/5">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">Leaderboard</h2>
-          <button className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700">
+          <button className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-indigo-500/40 transition hover:bg-indigo-700">
             Join challenge
           </button>
         </div>

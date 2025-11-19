@@ -35,21 +35,30 @@ export default function NewChallengePage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Launch a challenge</h1>
-          <p className="text-sm text-slate-500">
-            Set the rules and invite your squad—or the whole world.
-          </p>
+      {/* Hero Header */}
+      <section className="rounded-3xl bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 p-6 text-white shadow-sm shadow-slate-900/10">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
+              <span>🚀</span>
+              <span>Launch</span>
+            </span>
+            <div>
+              <h1 className="text-2xl font-semibold md:text-3xl">Create Challenge</h1>
+              <p className="mt-1 text-sm opacity-95">
+                Set the rules and invite your squad—or the whole world.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/challenges"
+            className="rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/30"
+          >
+            Cancel
+          </Link>
         </div>
-        <Link
-          href="/challenges"
-          className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
-        >
-          Cancel
-        </Link>
-      </header>
-      <form onSubmit={onSubmit} className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-lg">
+      </section>
+      <form onSubmit={onSubmit} className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/5">
         <label className="block text-sm font-semibold text-slate-700">
           Challenge name
           <input
@@ -127,7 +136,7 @@ export default function NewChallengePage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:opacity-60"
+          className="w-full rounded-full bg-gradient-to-r from-amber-500 to-indigo-500 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-amber-500/30 transition hover:shadow-lg hover:shadow-amber-500/40 active:scale-95 disabled:opacity-60"
         >
           {loading ? "Launching..." : "Launch challenge"}
         </button>

@@ -51,8 +51,8 @@ export default async function NotificationsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <section className="rounded-3xl bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 p-6 text-white shadow-sm">
+      {/* Hero Header */}
+      <section className="rounded-3xl bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 p-6 text-white shadow-sm shadow-slate-900/10">
         <div className="flex items-center justify-between">
           <div>
             <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">
@@ -68,7 +68,7 @@ export default async function NotificationsPage() {
       </section>
 
       {/* Notifications List */}
-      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/5">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-900">Recent Activity</h2>
           {notifications.length > 0 && (
@@ -134,7 +134,7 @@ export default async function NotificationsPage() {
       </section>
 
       {/* Notification Settings */}
-      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/5">
         <h2 className="mb-4 text-lg font-semibold text-slate-900">
           Notification Preferences
         </h2>

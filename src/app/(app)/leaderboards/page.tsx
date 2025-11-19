@@ -17,13 +17,24 @@ const mockLeaders = {
 export default function LeaderboardsPage() {
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold text-slate-900">Leaderboards</h1>
-        <p className="text-sm text-slate-500">See who&apos;s on fire—globally, in your area, and among friends.</p>
-      </header>
+      {/* Hero Header */}
+      <section className="rounded-3xl bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 p-6 text-white shadow-sm shadow-slate-900/10">
+        <div className="space-y-2">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
+            <span>🏆</span>
+            <span>Rankings</span>
+          </span>
+          <div>
+            <h1 className="text-2xl font-semibold md:text-3xl">Leaderboards</h1>
+            <p className="mt-1 text-sm md:text-base opacity-95">
+              See who&apos;s on fire—globally, in your area, and among friends.
+            </p>
+          </div>
+        </div>
+      </section>
       <section className="grid gap-4 md:grid-cols-3">
         {Object.entries(mockLeaders).map(([title, list]) => (
-          <div key={title} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div key={title} className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-900/5">
             <h2 className="text-lg font-semibold capitalize text-slate-900">{title}</h2>
             <ul className="mt-3 space-y-2">
               {list.map((p, i) => (

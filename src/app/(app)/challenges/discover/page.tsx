@@ -24,13 +24,22 @@ export default async function DiscoverChallengesPage() {
     .limit(10);
 
   return (
-    <div className="space-y-10">
-      <header>
-        <h1 className="text-3xl font-bold text-slate-900">Discover challenges</h1>
-        <p className="mt-2 text-sm text-slate-500">
-          Join public sprints or featured events curated by the Habitio team.
-        </p>
-      </header>
+    <div className="space-y-8">
+      {/* Hero Header */}
+      <section className="rounded-3xl bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 p-6 text-white shadow-sm shadow-slate-900/10">
+        <div className="space-y-2">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
+            <span>🌟</span>
+            <span>Explore</span>
+          </span>
+          <div>
+            <h1 className="text-2xl font-semibold md:text-3xl">Discover Challenges</h1>
+            <p className="mt-1 text-sm md:text-base opacity-95">
+              Join public sprints or featured events curated by the Habitio team.
+            </p>
+          </div>
+        </div>
+      </section>
 
       <section className="space-y-4">
         <h2 className="text-xl font-semibold text-slate-900">⭐ Featured</h2>
