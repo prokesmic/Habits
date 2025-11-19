@@ -106,159 +106,176 @@ export default async function DiscoverPage() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold flex items-center gap-3">
-          <Compass className="w-8 h-8 text-orange-500" />
-          Discover
-        </h1>
-        <p className="text-gray-600 mt-2">
-          Find popular habits, join challenges, and connect with others
-        </p>
-      </div>
+      {/* Hero Header */}
+      <section className="rounded-3xl bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 p-6 text-white shadow-sm shadow-slate-900/10">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
+              <Compass className="h-3 w-3" />
+              <span>Explore</span>
+            </span>
+            <div>
+              <h1 className="text-2xl font-semibold md:text-3xl">Discover</h1>
+              <p className="mt-1 text-sm md:text-base opacity-95">
+                Find popular habits, join challenges, and connect with others
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/habits/new"
+            className="inline-flex items-center justify-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-amber-600 shadow-sm shadow-slate-900/10 transition hover:bg-amber-50"
+          >
+            Create Custom Habit
+          </Link>
+        </div>
+      </section>
 
       {/* Popular Habits Section */}
-      <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-green-500" />
-            Popular Habits
-          </h2>
-          <button className="text-sm text-orange-600 font-medium hover:underline">
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-emerald-600" />
+            <h2 className="text-lg font-semibold text-slate-900">Popular Habits</h2>
+          </div>
+          <Link href="/habits" className="text-sm font-semibold text-amber-600 hover:text-amber-700">
             View All
-          </button>
+          </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {popularHabits.map((habit) => (
-            <div
+            <article
               key={habit.id}
-              className="bg-white rounded-xl border p-5 hover:shadow-lg transition-shadow cursor-pointer group"
+              className="group rounded-3xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-900/5 transition hover:shadow-md"
             >
               <div className="flex items-start gap-4">
-                <div className="text-4xl">{habit.emoji}</div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 to-indigo-500 text-2xl">
+                  <span className="text-white">{habit.emoji}</span>
+                </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold group-hover:text-orange-600 transition-colors">
+                  <h3 className="font-semibold text-slate-900 transition group-hover:text-amber-600">
                     {habit.name}
                   </h3>
-                  <p className="text-sm text-gray-500">{habit.category}</p>
-                  <div className="flex items-center gap-4 mt-2 text-xs text-gray-600">
+                  <p className="text-xs text-slate-500">{habit.category}</p>
+                  <div className="mt-2 flex items-center gap-4 text-xs text-slate-600">
                     <span className="flex items-center gap-1">
-                      <Users className="w-3 h-3" />
+                      <Users className="h-3 w-3" />
                       {habit.users.toLocaleString()} users
                     </span>
                     <span>Avg {habit.avgStreak}d streak</span>
                   </div>
                 </div>
               </div>
-              <button className="w-full mt-4 py-2 bg-orange-50 text-orange-600 font-medium rounded-lg hover:bg-orange-100 transition-colors">
+              <button className="mt-4 w-full rounded-full bg-amber-50 py-2 text-sm font-semibold text-amber-600 transition hover:bg-amber-100">
                 Add to My Habits
               </button>
-            </div>
+            </article>
           ))}
         </div>
       </section>
 
       {/* Trending Challenges Section */}
-      <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-yellow-500" />
-            Trending Challenges
-          </h2>
-          <Link
-            href="/challenges"
-            className="text-sm text-orange-600 font-medium hover:underline"
-          >
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Trophy className="h-5 w-5 text-amber-500" />
+            <h2 className="text-lg font-semibold text-slate-900">Trending Challenges</h2>
+          </div>
+          <Link href="/challenges" className="text-sm font-semibold text-amber-600 hover:text-amber-700">
             View All
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {trendingChallenges.map((challenge) => (
-            <div
+            <article
               key={challenge.id}
-              className="bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-5"
+              className="rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50 to-violet-50 p-5 shadow-sm shadow-slate-900/5"
             >
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-3xl">{challenge.emoji}</span>
-                <h3 className="font-bold">{challenge.name}</h3>
+              <div className="mb-3 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-100 text-xl">
+                  {challenge.emoji}
+                </div>
+                <h3 className="font-semibold text-slate-900">{challenge.name}</h3>
               </div>
 
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Participants</span>
-                  <span className="font-medium">{challenge.participants}</span>
+                <div className="flex justify-between rounded-lg bg-white/60 px-3 py-2">
+                  <span className="text-slate-600">Participants</span>
+                  <span className="font-semibold text-slate-900">{challenge.participants}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Days Left</span>
-                  <span className="font-medium">{challenge.daysLeft}</span>
+                <div className="flex justify-between rounded-lg bg-white/60 px-3 py-2">
+                  <span className="text-slate-600">Days Left</span>
+                  <span className="font-semibold text-slate-900">{challenge.daysLeft}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Prize Pool</span>
-                  <span className="font-bold text-purple-600">{challenge.prize}</span>
+                <div className="flex justify-between rounded-lg bg-white/60 px-3 py-2">
+                  <span className="text-slate-600">Prize Pool</span>
+                  <span className="font-bold text-indigo-600">{challenge.prize}</span>
                 </div>
               </div>
 
-              <button className="w-full mt-4 py-2 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors">
+              <Link
+                href={`/challenges/${challenge.id}/join`}
+                className="mt-4 flex w-full items-center justify-center rounded-full bg-indigo-600 py-2.5 text-sm font-semibold text-white shadow-sm shadow-indigo-500/40 transition hover:bg-indigo-700"
+              >
                 Join Challenge
-              </button>
-            </div>
+              </Link>
+            </article>
           ))}
         </div>
       </section>
 
       {/* Browse by Category */}
-      <section>
-        <h2 className="text-xl font-bold mb-4">Browse by Category</h2>
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold text-slate-900">Browse by Category</h2>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {categories.map((category) => {
-            const Icon = category.icon;
             return (
-              <button
+              <Link
                 key={category.name}
-                className="bg-white rounded-xl border p-6 hover:shadow-lg transition-all hover:border-orange-300 text-center group"
+                href={`/discover?category=${category.name.toLowerCase()}`}
+                className="group rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-sm shadow-slate-900/5 transition hover:border-amber-300 hover:shadow-md"
               >
-                <div className="text-4xl mb-3">{category.emoji}</div>
-                <h3 className="font-semibold group-hover:text-orange-600 transition-colors">
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 to-indigo-500 text-2xl">
+                  <span className="text-white">{category.emoji}</span>
+                </div>
+                <h3 className="font-semibold text-slate-900 transition group-hover:text-amber-600">
                   {category.name}
                 </h3>
-                <p className="text-sm text-gray-500 mt-1">{category.count} habits</p>
-              </button>
+                <p className="mt-1 text-xs text-slate-500">{category.count} habits</p>
+              </Link>
             );
           })}
         </div>
       </section>
 
       {/* Featured Squads */}
-      <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold flex items-center gap-2">
-            <Users className="w-5 h-5 text-blue-500" />
-            Featured Squads
-          </h2>
-          <Link
-            href="/squads"
-            className="text-sm text-orange-600 font-medium hover:underline"
-          >
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Users className="h-5 w-5 text-indigo-600" />
+            <h2 className="text-lg font-semibold text-slate-900">Featured Squads</h2>
+          </div>
+          <Link href="/squads" className="text-sm font-semibold text-amber-600 hover:text-amber-700">
             View All
           </Link>
         </div>
 
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6">
-          <div className="text-center">
-            <h3 className="text-lg font-bold mb-2">Join a Squad</h3>
-            <p className="text-gray-600 mb-4">
-              Accountability squads help you stay on track. Find like-minded people to build habits together.
-            </p>
-            <Link
-              href="/squads"
-              className="inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
-            >
-              Find Your Squad
-            </Link>
+        <div className="rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50 to-violet-50 p-8 text-center shadow-sm shadow-slate-900/5">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-indigo-100">
+            <Users className="h-8 w-8 text-indigo-600" />
           </div>
+          <h3 className="text-xl font-semibold text-slate-900">Join a Squad</h3>
+          <p className="mx-auto mt-2 max-w-md text-sm text-slate-600">
+            Accountability squads help you stay on track. Find like-minded people to build habits together and boost your success by 4.2x.
+          </p>
+          <Link
+            href="/squads"
+            className="mt-6 inline-flex items-center justify-center rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm shadow-indigo-500/40 transition hover:bg-indigo-700"
+          >
+            Find Your Squad
+          </Link>
         </div>
       </section>
     </div>
