@@ -28,13 +28,13 @@ export function SupportChat() {
     <>
       <button
         onClick={() => setIsOpen((v) => !v)}
-        className="fixed bottom-24 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-violet-600 text-xl text-white shadow-lg md:bottom-6 md:h-16 md:w-16 md:text-2xl"
+        className="fixed bottom-[140px] right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-violet-600 text-xl text-white shadow-lg md:bottom-6 md:h-16 md:w-16 md:text-2xl"
         aria-label="Support chat"
       >
         {isOpen ? "✕" : "💬"}
       </button>
       {isOpen && (
-        <div className="fixed bottom-40 right-4 z-[55] flex h-[400px] w-[calc(100%-2rem)] max-w-sm flex-col rounded-xl bg-white shadow-2xl md:bottom-24 md:right-6 md:h-[500px] md:w-96">
+        <div className="fixed bottom-[200px] right-4 z-[55] flex h-[400px] w-[calc(100%-2rem)] max-w-sm flex-col rounded-xl bg-white shadow-2xl md:bottom-24 md:right-6 md:h-[500px] md:w-96">
           <div className="rounded-t-xl bg-violet-600 p-4 text-white">
             <h3 className="font-semibold">Support Chat</h3>
             <p className="text-violet-100">We typically reply in under 5 minutes</p>

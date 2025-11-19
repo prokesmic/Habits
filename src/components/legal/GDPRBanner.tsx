@@ -23,7 +23,7 @@ export function GDPRBanner() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-white p-6 shadow-lg">
+    <div className="fixed bottom-16 left-0 right-0 z-[51] border-t bg-white p-6 shadow-lg md:bottom-0">
       <div className="mx-auto max-w-4xl">
         <h3 className="mb-2 font-semibold">🍪 Cookie Consent</h3>
         <p className="mb-4 text-sm text-gray-600">
