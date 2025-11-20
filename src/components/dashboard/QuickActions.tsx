@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Users,
   Trophy,
@@ -21,6 +22,8 @@ export function QuickActions({
   hasChallenges = false,
   className = ""
 }: QuickActionsProps) {
+  const router = useRouter();
+
   // Determine which actions to prioritize based on user state
   const actions = [
     {
@@ -67,10 +70,10 @@ export function QuickActions({
         {sortedActions.map((action) => {
           const Icon = action.icon;
           return (
-            <Link
+            <button
               key={action.href}
-              href={action.href}
-              className="flex flex-col p-4 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all group"
+              onClick={() => router.push(action.href)}
+              className="flex flex-col p-4 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all group cursor-pointer text-left"
             >
               <div className={`w-10 h-10 rounded-xl ${action.color} flex items-center justify-center mb-3 group-hover:scale-105 transition-transform`}>
                 <Icon className="w-5 h-5" />
@@ -81,7 +84,7 @@ export function QuickActions({
               <div className="text-xs text-gray-500">
                 {action.description}
               </div>
-            </Link>
+            </button>
           );
         })}
       </div>
@@ -91,6 +94,8 @@ export function QuickActions({
 
 // Compact version for sidebars
 export function QuickActionsCompact({ className = "" }: { className?: string }) {
+  const router = useRouter();
+
   const actions = [
     { label: "Join squad", href: "/squads", icon: Users },
     { label: "Challenge", href: "/challenges", icon: Trophy },
@@ -103,14 +108,14 @@ export function QuickActionsCompact({ className = "" }: { className?: string }) 
       {actions.map((action) => {
         const Icon = action.icon;
         return (
-          <Link
+          <button
             key={action.href}
-            href={action.href}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+            onClick={() => router.push(action.href)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors w-full text-left"
           >
             <Icon className="w-4 h-4" />
             {action.label}
-          </Link>
+          </button>
         );
       })}
     </div>
@@ -119,37 +124,39 @@ export function QuickActionsCompact({ className = "" }: { className?: string }) 
 
 // Hero quick actions for dashboard
 export function DashboardQuickActionsHero({ className = "" }: { className?: string }) {
+  const router = useRouter();
+
   return (
     <div className={`grid grid-cols-3 gap-3 ${className}`}>
-      <Link
-        href="/squads"
-        className="flex flex-col items-center p-4 rounded-2xl bg-gradient-to-br from-indigo-50 to-indigo-100 hover:from-indigo-100 hover:to-indigo-150 transition-colors group"
+      <button
+        onClick={() => router.push("/squads")}
+        className="flex flex-col items-center p-4 rounded-2xl bg-gradient-to-br from-indigo-50 to-indigo-100 hover:from-indigo-100 hover:to-indigo-150 transition-colors group cursor-pointer"
       >
         <div className="w-12 h-12 rounded-xl bg-indigo-500 text-white flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
           <Users className="w-6 h-6" />
         </div>
         <span className="text-sm font-semibold text-indigo-900">Join Squad</span>
-      </Link>
+      </button>
 
-      <Link
-        href="/challenges/new"
-        className="flex flex-col items-center p-4 rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-150 transition-colors group"
+      <button
+        onClick={() => router.push("/challenges/new")}
+        className="flex flex-col items-center p-4 rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-150 transition-colors group cursor-pointer"
       >
         <div className="w-12 h-12 rounded-xl bg-purple-500 text-white flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
           <Trophy className="w-6 h-6" />
         </div>
         <span className="text-sm font-semibold text-purple-900">Challenge</span>
-      </Link>
+      </button>
 
-      <Link
-        href="/referrals"
-        className="flex flex-col items-center p-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-150 transition-colors group"
+      <button
+        onClick={() => router.push("/referrals")}
+        className="flex flex-col items-center p-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-150 transition-colors group cursor-pointer"
       >
         <div className="w-12 h-12 rounded-xl bg-emerald-500 text-white flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
           <UserPlus className="w-6 h-6" />
         </div>
         <span className="text-sm font-semibold text-emerald-900">Invite</span>
-      </Link>
+      </button>
     </div>
   );
 }
