@@ -63,10 +63,30 @@ function transformSquadData(mockSquad: typeof allSquads[0]): Squad {
 }
 
 export default async function SquadsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  let memberships = null;
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser();
+
+    user = authUser;
+
+    if (user) {
+      // Fetch user memberships only if user is authenticated
+      const { data } = await supabase
+        .from("squad_members")
+        .select("role, joined_at, squad:squads(id, name, description, member_count, invite_code)")
+        .eq("user_id", user.id);
+
+      memberships = data;
+    }
+  } catch (error) {
+    console.error("Error fetching squads data:", error);
+    // Continue with null user - will show sign-in prompt
+  }
 
   if (!user) {
     return (
@@ -81,12 +101,6 @@ export default async function SquadsPage() {
       </div>
     );
   }
-
-  // Fetch user memberships
-  const { data: memberships } = await supabase
-    .from("squad_members")
-    .select("role, joined_at, squad:squads(id, name, description, member_count, invite_code)")
-    .eq("user_id", user.id);
 
   // Transform user's squads
   const yourSquads: Squad[] = (memberships ?? []).map((entry) => {
