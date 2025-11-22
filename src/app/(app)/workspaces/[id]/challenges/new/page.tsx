@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 
 export default function CreateTeamChallengePage({ params }: { params: { id: string } }) {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [challenge, setChallenge] = useState<any>({
     name: "",
     type: "team_streak",
@@ -18,12 +20,25 @@ export default function CreateTeamChallengePage({ params }: { params: { id: stri
   ];
 
   const create = async () => {
-    const res = await fetch(`/api/workspaces/${params.id}/challenges`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(challenge),
-    });
-    if (res.ok) router.push(`/workspaces/${params.id}`);
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/workspaces/${params.id}/challenges`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(challenge),
+      });
+      if (res.ok) {
+        router.push(`/workspaces/${params.id}`);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || "Failed to create challenge. Please try again.");
+        setLoading(false);
+      }
+    } catch {
+      setError("Failed to create challenge. Please try again.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -92,13 +107,24 @@ export default function CreateTeamChallengePage({ params }: { params: { id: stri
           />
         </div>
       </div>
-      <button
-        onClick={create}
-        disabled={!challenge.name || !challenge.goal}
-        className="w-full rounded-lg bg-violet-600 px-6 py-3 font-semibold text-white disabled:opacity-50"
-      >
-        Create Challenge
-      </button>
+
+      {/* Error message */}
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      {/* Submit button with extra spacing */}
+      <div className="pt-2">
+        <button
+          onClick={create}
+          disabled={loading || !challenge.name || !challenge.goal}
+          className="w-full rounded-lg bg-violet-600 px-6 py-3 font-semibold text-white disabled:opacity-50"
+        >
+          {loading ? "Creating..." : "Create Challenge"}
+        </button>
+      </div>
     </div>
   );
 }

@@ -13,6 +13,7 @@ type ChallengeFormValues = z.input<typeof challengeSchema>;
 
 export default function NewChallengePage() {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const form = useForm<ChallengeFormValues>({
     resolver: zodResolver(challengeSchema),
     defaultValues: {
@@ -28,9 +29,15 @@ export default function NewChallengePage() {
 
   const onSubmit = form.handleSubmit(async (values) => {
     setLoading(true);
-    await createChallenge(values);
-    track(events.challengeCreated, { challenge_format: values.challenge_format });
-    window.location.assign("/challenges");
+    setError(null);
+    try {
+      await createChallenge(values);
+      track(events.challengeCreated, { challenge_format: values.challenge_format });
+      window.location.assign("/challenges");
+    } catch {
+      setError("Failed to create challenge. Please try again.");
+      setLoading(false);
+    }
   });
 
   return (
@@ -133,13 +140,24 @@ export default function NewChallengePage() {
             <option value="public">Public</option>
           </select>
         </label>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-full bg-gradient-to-r from-amber-500 to-indigo-500 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-amber-500/30 transition hover:shadow-lg hover:shadow-amber-500/40 active:scale-95 disabled:opacity-60"
-        >
-          {loading ? "Launching..." : "Launch challenge"}
-        </button>
+
+        {/* Error message */}
+        {error && (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        {/* Submit button with extra spacing */}
+        <div className="pt-2">
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-full bg-gradient-to-r from-amber-500 to-indigo-500 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-amber-500/30 transition hover:shadow-lg hover:shadow-amber-500/40 active:scale-95 disabled:opacity-60"
+          >
+            {loading ? "Launching..." : "Launch challenge"}
+          </button>
+        </div>
       </form>
     </div>
   );
