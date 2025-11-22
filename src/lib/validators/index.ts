@@ -3,6 +3,7 @@ import { z } from "zod";
 export const habitSchema = z.object({
   title: z.string().min(1, "Habit name required").max(100),
   emoji: z.string().optional(),
+  icon: z.string().optional(), // Lucide icon name
   description: z.string().max(500).optional(),
   frequency: z.enum(["daily", "weekdays", "custom"]),
   target_days_per_week: z.number().min(1).max(7),

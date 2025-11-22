@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { habitSchema } from "@/lib/validators";
@@ -9,17 +9,19 @@ import { useState } from "react";
 import { track, events } from "@/lib/analytics";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { IconPicker } from "@/components/habits/IconPicker";
 
 type HabitFormValues = z.input<typeof habitSchema>;
 
 export default function NewHabitPage() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const form = useForm<HabitFormValues>({
     resolver: zodResolver(habitSchema),
     defaultValues: {
       title: "",
-      emoji: "✅",
+      icon: "CheckSquare",
       description: "",
       frequency: "daily",
       target_days_per_week: 7,
@@ -27,12 +29,21 @@ export default function NewHabitPage() {
     },
   });
 
+  // Watch the title for AI icon suggestions
+  const habitTitle = useWatch({ control: form.control, name: "title" });
+
   const onSubmit = form.handleSubmit(async (values) => {
     setSubmitting(true);
-    await createHabit(values);
-    track(events.habitCreated);
-    router.push("/dashboard");
-    router.refresh();
+    setError(null);
+    try {
+      await createHabit(values);
+      track(events.habitCreated);
+      router.push("/dashboard");
+      router.refresh();
+    } catch {
+      setError("Failed to create habit. Please try again.");
+      setSubmitting(false);
+    }
   });
 
   return (
@@ -60,24 +71,32 @@ export default function NewHabitPage() {
       </section>
 
       <form onSubmit={onSubmit} className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="text-sm font-semibold text-slate-700">
-            Habit name
-            <input
-              {...form.register("title")}
-              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-gray-900 placeholder:text-slate-400 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-              placeholder="10 push-ups"
-            />
-            <ErrorMessage message={form.formState.errors.title?.message} />
-          </label>
-          <label className="text-sm font-semibold text-slate-700">
-            Emoji
-            <input
-              {...form.register("emoji")}
-              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-gray-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-            />
-            <ErrorMessage message={form.formState.errors.emoji?.message} />
-          </label>
+        {/* Habit name - full width */}
+        <label className="block text-sm font-semibold text-slate-700">
+          Habit name
+          <input
+            {...form.register("title")}
+            className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-gray-900 placeholder:text-slate-400 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+            placeholder="Morning meditation, 10 push-ups, Read 20 pages..."
+          />
+          <ErrorMessage message={form.formState.errors.title?.message} />
+        </label>
+
+        {/* Icon Picker */}
+        <div className="text-sm font-semibold text-slate-700">
+          <span className="flex items-center gap-2">
+            Icon
+            {habitTitle && (
+              <span className="text-xs font-normal text-amber-600">
+                AI suggestions based on your habit name
+              </span>
+            )}
+          </span>
+          <IconPicker
+            value={form.watch("icon") || "CheckSquare"}
+            onChange={(iconName) => form.setValue("icon", iconName)}
+            habitName={habitTitle || ""}
+          />
         </div>
         <label className="block text-sm font-semibold text-slate-700">
           Description
@@ -126,13 +145,22 @@ export default function NewHabitPage() {
           </p>
         </div>
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full rounded-full bg-gradient-to-r from-amber-500 to-indigo-500 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-amber-500/30 transition hover:shadow-lg hover:shadow-amber-500/40 active:scale-95 disabled:opacity-60"
-        >
-          {submitting ? "Creating your habit..." : "Create habit & start tracking"}
-        </button>
+        {/* Error message */}
+        {error && (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        <div className="pt-2">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full rounded-full bg-gradient-to-r from-amber-500 to-indigo-500 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-amber-500/30 transition hover:shadow-lg hover:shadow-amber-500/40 active:scale-95 disabled:opacity-60"
+          >
+            {submitting ? "Creating your habit..." : "Create habit & start tracking"}
+          </button>
+        </div>
       </form>
     </div>
   );
