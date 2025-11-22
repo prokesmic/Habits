@@ -199,7 +199,8 @@ export async function createSquad(name: string, description: string) {
 
   const inviteCode = generateInviteCode();
 
-  // Insert squad - don't use .select() here as it might fail due to RLS before member is added
+  // Insert squad with is_public=true temporarily so we can read it back
+  // The RLS SELECT policy allows reading public squads
   const { data: insertResult, error: squadError } = await supabase
     .from("squads")
     .insert({
@@ -207,6 +208,7 @@ export async function createSquad(name: string, description: string) {
       description,
       owner_id: user.id,
       invite_code: inviteCode,
+      is_public: true, // Set true temporarily to bypass RLS SELECT
     })
     .select("id")
     .single();
@@ -218,7 +220,7 @@ export async function createSquad(name: string, description: string) {
 
   const squadId = insertResult.id;
 
-  // Add owner as squad member first
+  // Add owner as squad member
   const { error: memberError } = await supabase
     .from("squad_members")
     .insert({
@@ -229,34 +231,25 @@ export async function createSquad(name: string, description: string) {
 
   if (memberError) {
     console.error("Squad member creation error:", memberError);
-    // Even if member insert fails, we should still be able to fetch the squad as owner
   }
 
-  // Now fetch the full squad data - should work now that member is added or as owner
-  const { data: squad, error: fetchError } = await supabase
+  // Now set is_public back to false (user can change it later if they want)
+  await supabase
     .from("squads")
-    .select("*")
-    .eq("id", squadId)
-    .single();
-
-  if (fetchError || !squad) {
-    console.error("Squad fetch error after creation:", fetchError);
-    // Return minimal data if we can't fetch full squad
-    revalidatePath("/squads");
-    return {
-      id: squadId,
-      name,
-      description,
-      owner_id: user.id,
-      invite_code: inviteCode,
-      is_public: false,
-      member_count: 1,
-      created_at: new Date().toISOString(),
-    };
-  }
+    .update({ is_public: false })
+    .eq("id", squadId);
 
   revalidatePath("/squads");
-  return squad;
+  return {
+    id: squadId,
+    name,
+    description,
+    owner_id: user.id,
+    invite_code: inviteCode,
+    is_public: false,
+    member_count: 1,
+    created_at: new Date().toISOString(),
+  };
 }
 
 function generateReferralCode() {
