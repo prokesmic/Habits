@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Users, TrendingUp, MessageCircle, Settings } from "lucide-react";
 import { allSquads } from "@/data/mockSquadsFull";
+import { CopyInviteCode } from "@/components/squads/CopyInviteCode";
 
 export const dynamic = "force-dynamic";
 
@@ -228,14 +229,7 @@ export default async function SquadDetailPage({ params }: SquadPageProps) {
             <code className="flex-1 rounded-xl border border-blue-300 bg-white px-4 py-3 font-mono text-sm font-semibold text-blue-900">
               {squad.invite_code}
             </code>
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(squad.invite_code);
-              }}
-              className="rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
-            >
-              Copy Code
-            </button>
+            <CopyInviteCode code={squad.invite_code} />
           </div>
         </section>
       )}
