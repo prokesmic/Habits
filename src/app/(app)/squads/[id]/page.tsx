@@ -5,6 +5,7 @@ import { Users, TrendingUp, MessageCircle, Settings } from "lucide-react";
 import { allSquads } from "@/data/mockSquadsFull";
 import { CopyInviteCode } from "@/components/squads/CopyInviteCode";
 import { DeleteSquadButton } from "@/components/squads/DeleteSquadButton";
+import { InviteMembersButton } from "@/components/squads/InviteMembersButton";
 
 export const dynamic = "force-dynamic";
 
@@ -128,7 +129,7 @@ export default async function SquadDetailPage({ params }: SquadPageProps) {
             <div className="mt-4 flex flex-wrap gap-4 text-xs uppercase tracking-wide text-slate-600">
               <span className="flex items-center gap-1">
                 <Users className="h-4 w-4" />
-                {squad.member_count ?? 0} members
+                {membersList.length} {membersList.length === 1 ? "member" : "members"}
               </span>
               <span>Created {new Date(squad.created_at).toLocaleDateString()}</span>
               {squad.is_public ? (
@@ -185,10 +186,17 @@ export default async function SquadDetailPage({ params }: SquadPageProps) {
 
       {/* Members Section */}
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-900">Members</h2>
-        <p className="mt-1 text-sm text-slate-600">
-          {membersList.length} active {membersList.length === 1 ? "member" : "members"}
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">Members</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              {membersList.length} {membersList.length === 1 ? "member" : "members"} in this squad
+            </p>
+          </div>
+          {isMember && !isMockSquad && (
+            <InviteMembersButton squadId={squad.id} squadName={squad.name} />
+          )}
+        </div>
 
         {membersList.length > 0 ? (
           <div className="mt-4 space-y-3">
