@@ -352,7 +352,7 @@ export const DesktopDashboardClient = ({
                   Squad Today
                 </h2>
                 <Link
-                  href="/feed"
+                  href="/squads"
                   className="text-xs font-medium text-amber-600 hover:text-amber-700"
                 >
                   View all
