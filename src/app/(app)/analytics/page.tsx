@@ -110,9 +110,10 @@ export default function AnalyticsDashboardPage() {
                 size="sm"
                 onClick={handleExportCSV}
                 className="gap-1.5"
+                aria-label="Export analytics data as CSV"
               >
-                <Download className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Export CSV</span>
+                <Download className="h-3.5 w-3.5 text-amber-600" />
+                <span>Export</span>
               </Button>
             </div>
           </div>
