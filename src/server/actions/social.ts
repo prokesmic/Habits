@@ -258,6 +258,47 @@ export async function createSquad(name: string, description: string) {
   };
 }
 
+export async function deleteSquad(squadId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  // Check if user is the owner of the squad
+  const { data: squad, error: squadError } = await supabase
+    .from("squads")
+    .select("owner_id")
+    .eq("id", squadId)
+    .single();
+
+  if (squadError || !squad) {
+    throw new Error("Squad not found");
+  }
+
+  if (squad.owner_id !== user.id) {
+    throw new Error("Only the squad owner can delete the squad");
+  }
+
+  // Delete the squad (cascade will handle members and messages)
+  const { error: deleteError } = await supabase
+    .from("squads")
+    .delete()
+    .eq("id", squadId);
+
+  if (deleteError) {
+    console.error("Squad deletion error:", deleteError);
+    throw new Error(`Failed to delete squad: ${deleteError.message}`);
+  }
+
+  revalidatePath("/squads");
+  return { success: true };
+}
+
 function generateReferralCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
 }

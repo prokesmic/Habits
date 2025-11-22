@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Users, TrendingUp, MessageCircle, Settings } from "lucide-react";
 import { allSquads } from "@/data/mockSquadsFull";
 import { CopyInviteCode } from "@/components/squads/CopyInviteCode";
+import { DeleteSquadButton } from "@/components/squads/DeleteSquadButton";
 
 export const dynamic = "force-dynamic";
 
@@ -65,6 +66,7 @@ export default async function SquadDetailPage({ params }: SquadPageProps) {
   let membersList: { userId: string; role: string; username: string; avatarUrl: string | null; joinedAt: string }[] = [];
   let isMember = false;
   let isAdmin = false;
+  let isOwner = false;
 
   if (isMockSquad) {
     // Generate mock members from avatars
@@ -107,6 +109,7 @@ export default async function SquadDetailPage({ params }: SquadPageProps) {
 
     isMember = !!membership;
     isAdmin = membership?.role === "admin";
+    isOwner = membership?.role === "owner" || squad.owner_id === user.id;
   }
 
   return (
@@ -230,6 +233,19 @@ export default async function SquadDetailPage({ params }: SquadPageProps) {
               {squad.invite_code}
             </code>
             <CopyInviteCode code={squad.invite_code} />
+          </div>
+        </section>
+      )}
+
+      {/* Danger Zone - Only show to owner */}
+      {isOwner && !isMockSquad && (
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-slate-900">Danger Zone</h2>
+          <p className="mt-1 text-sm text-slate-600">
+            Permanently delete this squad and all its data
+          </p>
+          <div className="mt-4">
+            <DeleteSquadButton squadId={squad.id} squadName={squad.name} />
           </div>
         </section>
       )}
