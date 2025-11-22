@@ -220,7 +220,7 @@ export async function createSquad(name: string, description: string) {
 
   const squadId = insertResult.id;
 
-  // Add owner as squad member
+  // Add owner as squad member - this is critical for chat and other features
   const { error: memberError } = await supabase
     .from("squad_members")
     .insert({
@@ -231,6 +231,12 @@ export async function createSquad(name: string, description: string) {
 
   if (memberError) {
     console.error("Squad member creation error:", memberError);
+    // If it's not a duplicate key error, this is a real problem
+    if (memberError.code !== "23505") {
+      // Try to clean up the squad we just created
+      await supabase.from("squads").delete().eq("id", squadId);
+      throw new Error(`Failed to add you as squad member: ${memberError.message}`);
+    }
   }
 
   // Now set is_public back to false (user can change it later if they want)
