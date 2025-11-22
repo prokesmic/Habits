@@ -102,28 +102,39 @@ export default async function SquadsPage() {
     );
   }
 
-  // Transform user's squads
-  const yourSquads: Squad[] = (memberships ?? []).map((entry) => {
-    const squadData = (entry as any).squad;
-    return {
-      id: squadData?.id ? String(squadData.id) : "",
-      name: squadData?.name ?? "Squad",
-      emoji: "👥",
-      gradientFrom: "from-indigo-500",
-      gradientTo: "to-violet-500",
-      tagline: squadData?.description ?? "Accountability crew",
-      members: Number(squadData?.member_count ?? 0),
-      dailyCheckinsPercent: 85,
-      successPercent: 85,
-      entryStake: 0,
-      poolAmount: 0,
-      topHabits: [],
-      isJoined: true,
-    };
-  }).filter(s => s.id);
+  // Transform user's squads with safe error handling
+  const yourSquads: Squad[] = [];
+  for (const entry of memberships ?? []) {
+    try {
+      const squadData = (entry as any).squad;
+      if (!squadData || !squadData.id) continue;
+      yourSquads.push({
+        id: String(squadData.id),
+        name: squadData.name ?? "Squad",
+        emoji: "👥",
+        gradientFrom: "from-indigo-500",
+        gradientTo: "to-violet-500",
+        tagline: squadData.description ?? "Accountability crew",
+        members: Number(squadData.member_count ?? 0),
+        dailyCheckinsPercent: 85,
+        successPercent: 85,
+        entryStake: 0,
+        poolAmount: 0,
+        topHabits: [],
+        isJoined: true,
+      });
+    } catch (e) {
+      console.error("Error transforming squad data:", e);
+    }
+  }
 
-  // Get featured squads from mock data
-  const featuredSquads = allSquads.filter(s => s.featured).map(transformSquadData);
+  // Get featured squads from mock data with safe error handling
+  let featuredSquads: Squad[] = [];
+  try {
+    featuredSquads = allSquads.filter(s => s.featured).map(transformSquadData);
+  } catch (e) {
+    console.error("Error loading featured squads:", e);
+  }
 
   const userHasSquads = yourSquads.length > 0;
 

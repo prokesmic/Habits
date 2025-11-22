@@ -242,6 +242,7 @@ export async function createSquad(name: string, description: string) {
   if (fetchError || !squad) {
     console.error("Squad fetch error after creation:", fetchError);
     // Return minimal data if we can't fetch full squad
+    revalidatePath("/squads");
     return {
       id: squadId,
       name,
@@ -254,6 +255,7 @@ export async function createSquad(name: string, description: string) {
     };
   }
 
+  revalidatePath("/squads");
   return squad;
 }
 
