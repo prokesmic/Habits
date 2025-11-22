@@ -161,8 +161,11 @@ export async function POST(request: NextRequest, context: RouteContext) {
       // Send email
       if (resend) {
         try {
-          await resend.emails.send({
-            from: "Habitio <noreply@resend.dev>", // Use resend.dev for testing, replace with your domain
+          // Use RESEND_FROM_EMAIL env var, or fall back to onboarding@resend.dev for testing
+          const fromEmail = process.env.RESEND_FROM_EMAIL || "Habitio <onboarding@resend.dev>";
+
+          const emailResult = await resend.emails.send({
+            from: fromEmail,
             to: normalizedEmail,
             subject: `${inviterName} invited you to join "${squad.name}" on Habitio`,
             react: SquadInvitationEmail({
@@ -174,13 +177,15 @@ export async function POST(request: NextRequest, context: RouteContext) {
             }),
           });
 
+          console.log("Email sent successfully:", emailResult);
           results.push({ email: normalizedEmail, success: true });
-        } catch (emailError) {
-          console.error("Error sending email:", emailError);
+        } catch (emailError: any) {
+          console.error("Error sending email:", emailError?.message || emailError);
+          console.error("Full error:", JSON.stringify(emailError, null, 2));
           results.push({
             email: normalizedEmail,
             success: false,
-            error: "Failed to send email",
+            error: emailError?.message || "Failed to send email",
           });
         }
       } else {
