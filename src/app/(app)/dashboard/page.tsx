@@ -11,6 +11,9 @@ type HabitSupabaseRow = {
   emoji: string | null;
   frequency: string;
   target_days_per_week: number | null;
+  current_streak?: number | null;
+  longest_streak?: number | null;
+  has_stake?: boolean | null;
 };
 
 export default async function DashboardPage() {
@@ -33,7 +36,7 @@ export default async function DashboardPage() {
       .single(),
     supabase
       .from("habits")
-      .select("id, title, emoji, frequency, target_days_per_week, current_streak, longest_streak, has_stake")
+      .select("id, title, emoji, frequency, target_days_per_week")
       .eq("user_id", user.id)
       .eq("archived", false)
   ]);
@@ -45,7 +48,12 @@ export default async function DashboardPage() {
     redirect("/onboarding");
   }
 
-  const { data: habits } = habitsResponse;
+  const { data: habits, error: habitsError } = habitsResponse;
+
+  // Log any habits query error for debugging
+  if (habitsError) {
+    console.error("Failed to fetch habits:", habitsError);
+  }
 
   // Use UTC date for consistency
   const today = new Date().toISOString().split("T")[0];
@@ -79,12 +87,12 @@ export default async function DashboardPage() {
       id: idStr,
       name: h.title ?? "Habit",
       emoji: h.emoji ?? "✅",
-      currentStreak: h.current_streak ?? 0,
-      longestStreak: h.longest_streak ?? 0,
+      currentStreak: 0, // TODO: Calculate from habit_logs or add column to habits table
+      longestStreak: 0, // TODO: Calculate from habit_logs or add column to habits table
       checkedInToday: checkedIn,
       squadMembers: mockSquadMembers,
-      hasStake: h.has_stake ?? false,
-      stakeAmount: h.has_stake ? 50 : undefined, // Placeholder until stakes table linked
+      hasStake: false, // TODO: Check stakes table
+      stakeAmount: undefined,
     };
   });
 
