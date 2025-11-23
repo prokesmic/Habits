@@ -78,6 +78,7 @@ export default function NewHabitPage() {
             {...form.register("title")}
             className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-gray-900 placeholder:text-slate-400 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
             placeholder="Morning meditation, 10 push-ups, Read 20 pages..."
+            data-testid="habit-title-input"
           />
           <ErrorMessage message={form.formState.errors.title?.message} />
         </label>
@@ -105,6 +106,7 @@ export default function NewHabitPage() {
             rows={3}
             className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-gray-900 placeholder:text-slate-400 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
             placeholder="Add context for your squad"
+            data-testid="habit-description-input"
           />
           <ErrorMessage message={form.formState.errors.description?.message} />
         </label>
@@ -114,6 +116,7 @@ export default function NewHabitPage() {
             <select
               {...form.register("frequency")}
               className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-gray-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+              data-testid="habit-frequency-select"
             >
               <option value="daily">Daily</option>
               <option value="weekdays">Weekdays</option>
@@ -129,12 +132,13 @@ export default function NewHabitPage() {
               max={7}
               {...form.register("target_days_per_week", { valueAsNumber: true })}
               className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-gray-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+              data-testid="habit-target-days-input"
             />
             <ErrorMessage message={form.formState.errors.target_days_per_week?.message} />
           </label>
         </div>
         <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-          <input type="checkbox" {...form.register("is_public")} className="h-4 w-4 rounded border-slate-300 text-amber-500 focus:ring-amber-500" />
+          <input type="checkbox" {...form.register("is_public")} className="h-4 w-4 rounded border-slate-300 text-amber-500 focus:ring-amber-500" data-testid="habit-public-checkbox" />
           Make this habit public (recommended for discovery)
         </label>
 
@@ -157,6 +161,7 @@ export default function NewHabitPage() {
             type="submit"
             disabled={submitting}
             className="w-full rounded-full bg-gradient-to-r from-amber-500 to-indigo-500 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-amber-500/30 transition hover:shadow-lg hover:shadow-amber-500/40 active:scale-95 disabled:opacity-60"
+            data-testid="habit-submit-button"
           >
             {submitting ? "Creating your habit..." : "Create habit & start tracking"}
           </button>

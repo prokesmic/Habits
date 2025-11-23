@@ -116,7 +116,7 @@ function SignUpForm() {
       <p className="mt-2 text-center text-sm text-slate-500">
         Join 10,000+ people building better habits together.
       </p>
-      <form onSubmit={handleSignUp} className="mt-6 space-y-4">
+      <form onSubmit={handleSignUp} className="mt-6 space-y-4" data-testid="sign-up-form">
         <label className="block text-sm font-semibold text-slate-700">
           Email
           <input
@@ -125,6 +125,8 @@ function SignUpForm() {
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@example.com"
             required
+            autoComplete="email"
+            data-testid="email-input"
             className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-gray-900 placeholder:text-slate-400 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
           />
         </label>
@@ -137,6 +139,8 @@ function SignUpForm() {
             placeholder="At least 6 characters"
             required
             minLength={6}
+            autoComplete="new-password"
+            data-testid="password-input"
             className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-gray-900 placeholder:text-slate-400 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
           />
         </label>
@@ -146,15 +150,18 @@ function SignUpForm() {
             type="password"
             value={confirmPassword}
             onChange={(event) => setConfirmPassword(event.target.value)}
-            placeholder="Confirm your password"
+            placeholder="At least 6 characters"
             required
             minLength={6}
+            autoComplete="new-password"
+            data-testid="confirm-password-input"
             className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-gray-900 placeholder:text-slate-400 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
           />
         </label>
         <button
           type="submit"
           disabled={loading || !email || !password || !confirmPassword}
+          data-testid="sign-up-button"
           className="w-full rounded-full bg-gradient-to-r from-amber-500 to-indigo-500 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-amber-500/30 transition hover:shadow-lg hover:shadow-amber-500/40 active:scale-95 disabled:opacity-60"
         >
           {loading ? "Creating account..." : "Start your habit journey"}
@@ -163,7 +170,7 @@ function SignUpForm() {
       <div className="mt-6 space-y-2 text-center text-sm text-slate-500">
         <p>
           Already have an account?{" "}
-          <Link href="/auth/sign-in" className="font-semibold text-amber-600 hover:text-amber-700">
+          <Link href="/auth/sign-in" className="font-semibold text-amber-600 hover:text-amber-700" data-testid="sign-in-link">
             Sign in
           </Link>
         </p>

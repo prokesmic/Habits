@@ -83,6 +83,7 @@ export function FiltersAndSort({ onFilterChange, onSortChange }: FiltersAndSortP
               <div
                 className="fixed inset-0 z-10"
                 onClick={() => setShowSortMenu(false)}
+                data-testid="sort-menu-backdrop"
               />
               <div className="absolute right-0 top-full z-20 mt-2 w-48 rounded-xl border border-slate-200 bg-white shadow-lg">
                 {sortOptions.map((option) => (

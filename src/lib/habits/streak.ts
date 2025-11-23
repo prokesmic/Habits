@@ -17,7 +17,16 @@ export function calculateStreak(previousLog: HabitLog | null, currentDate: strin
   }
 
   if (frequency === "weekdays") {
-    return diffDays <= 3 ? previousLog.streak_count + 1 : 1;
+    // If it's Monday (1) and previous was Friday (5), diff is 3 days, which is valid.
+    // If it's any other day, diff must be 1.
+    const isMonday = curr.getDay() === 1;
+    const wasFriday = prev.getDay() === 5;
+
+    if (isMonday && wasFriday && diffDays <= 3) {
+      return previousLog.streak_count + 1;
+    }
+
+    return diffDays === 1 ? previousLog.streak_count + 1 : 1;
   }
 
   return previousLog.streak_count + 1;

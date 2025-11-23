@@ -63,6 +63,7 @@ export default function NewSquadPage() {
             onChange={(event) => setName(event.target.value)}
             className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
             placeholder="Morning Movement Crew"
+            data-testid="squad-name-input"
           />
         </label>
         <label className="block text-sm font-semibold text-slate-700">
@@ -73,6 +74,7 @@ export default function NewSquadPage() {
             onChange={(event) => setDescription(event.target.value)}
             className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
             placeholder="What keeps this squad accountable?"
+            data-testid="squad-description-input"
           />
         </label>
         {error ? <p className="text-sm text-red-500">{error}</p> : null}
@@ -80,6 +82,7 @@ export default function NewSquadPage() {
           type="submit"
           disabled={loading}
           className="w-full rounded-full bg-gradient-to-r from-amber-500 to-indigo-500 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-amber-500/30 transition hover:shadow-lg hover:shadow-amber-500/40 active:scale-95 disabled:opacity-60"
+          data-testid="squad-submit-button"
         >
           {loading ? "Creating..." : "Create squad"}
         </button>

@@ -23,12 +23,14 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/auth/sign-in"
+              data-testid="header-sign-in-link"
               className="text-sm font-medium text-slate-700 hover:text-slate-900"
             >
               Sign In
             </Link>
             <Link
               href="/auth/sign-up"
+              data-testid="header-sign-up-link"
               className="hidden rounded-full border border-amber-500/80 px-4 py-1.5 text-sm font-semibold text-amber-600 hover:bg-amber-50/80 md:inline-flex"
             >
               Sign Up
@@ -68,11 +70,14 @@ export default function LandingPage() {
               <div className="flex flex-wrap items-center gap-3">
                 <Link
                   href="/auth/sign-up"
+                  data-testid="start-habit-button"
                   className="inline-flex items-center justify-center rounded-full bg-amber-500 px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-amber-500/40 transition hover:bg-amber-600 hover:shadow-md hover:shadow-amber-500/50"
                 >
                   Start Your First Habit
                 </Link>
                 <button
+                  type="button"
+                  data-testid="see-how-it-works-button"
                   onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
                   className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
                 >

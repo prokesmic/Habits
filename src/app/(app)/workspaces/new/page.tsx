@@ -43,16 +43,17 @@ export default function CreateWorkspacePage() {
                 setData((d) => ({ ...d, name, slug }));
               }}
               placeholder="Acme Inc."
+              data-testid="workspace-name-input"
             />
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium">Workspace URL</label>
             <div className="flex items-center gap-2">
               <span className="text-gray-600">habittracker.com/</span>
-              <input className="flex-1 rounded-lg border px-4 py-3" value={data.slug} onChange={(e) => setData((d) => ({ ...d, slug: e.target.value }))} placeholder="acme" />
+              <input className="flex-1 rounded-lg border px-4 py-3" value={data.slug} onChange={(e) => setData((d) => ({ ...d, slug: e.target.value }))} placeholder="acme" data-testid="workspace-slug-input" />
             </div>
           </div>
-          <button className="w-full rounded-lg bg-violet-600 px-6 py-3 font-semibold text-white disabled:opacity-50" disabled={!data.name || !data.slug} onClick={() => setStep(2)}>
+          <button className="w-full rounded-lg bg-violet-600 px-6 py-3 font-semibold text-white disabled:opacity-50" disabled={!data.name || !data.slug} onClick={() => setStep(2)} data-testid="workspace-step1-continue">
             Continue
           </button>
         </div>
@@ -66,6 +67,7 @@ export default function CreateWorkspacePage() {
                 key={p.id}
                 onClick={() => setData((d) => ({ ...d, plan: p.id as any }))}
                 className={`rounded-xl border-2 p-6 text-left ${data.plan === p.id ? "border-violet-600 bg-violet-50" : "border-gray-200 hover:border-gray-300"}`}
+                data-testid={`workspace-plan-${p.id}`}
               >
                 <h3 className="mb-2 text-xl font-bold">{p.name}</h3>
                 <div className="mb-4 text-3xl font-bold">{typeof p.price === "object" ? <>${p.price.monthly}</> : <span className="text-lg">{p.price}</span>}</div>
@@ -83,15 +85,15 @@ export default function CreateWorkspacePage() {
           {data.plan !== "enterprise" && (
             <div>
               <label className="mb-2 block text-sm font-medium">Number of Seats</label>
-              <input type="number" min={5} className="w-full rounded-lg border px-4 py-3" value={data.seats} onChange={(e) => setData((d) => ({ ...d, seats: parseInt(e.target.value) }))} />
+              <input type="number" min={5} className="w-full rounded-lg border px-4 py-3" value={data.seats} onChange={(e) => setData((d) => ({ ...d, seats: parseInt(e.target.value) }))} data-testid="workspace-seats-input" />
               <div className="mt-2 text-sm text-gray-600">Total: ${data.seats * 12}/month</div>
             </div>
           )}
           <div className="flex gap-4">
-            <button className="flex-1 rounded-lg border-2 border-gray-300 px-6 py-3 font-semibold" onClick={() => setStep(1)}>
+            <button className="flex-1 rounded-lg border-2 border-gray-300 px-6 py-3 font-semibold" onClick={() => setStep(1)} data-testid="workspace-step2-back">
               Back
             </button>
-            <button className="flex-1 rounded-lg bg-violet-600 px-6 py-3 font-semibold text-white" onClick={() => setStep(3)}>
+            <button className="flex-1 rounded-lg bg-violet-600 px-6 py-3 font-semibold text-white" onClick={() => setStep(3)} data-testid="workspace-step2-continue">
               Continue
             </button>
           </div>
@@ -123,10 +125,10 @@ export default function CreateWorkspacePage() {
             </div>
           </div>
           <div className="flex gap-4">
-            <button className="flex-1 rounded-lg border-2 border-gray-300 px-6 py-3 font-semibold" onClick={() => setStep(2)}>
+            <button className="flex-1 rounded-lg border-2 border-gray-300 px-6 py-3 font-semibold" onClick={() => setStep(2)} data-testid="workspace-step3-back">
               Back
             </button>
-            <button className="flex-1 rounded-lg bg-violet-600 px-6 py-3 font-semibold text-white" onClick={create}>
+            <button className="flex-1 rounded-lg bg-violet-600 px-6 py-3 font-semibold text-white" onClick={create} data-testid="workspace-submit-button">
               Continue to Payment
             </button>
           </div>

@@ -72,6 +72,7 @@ export default function NewChallengePage() {
             {...form.register("name")}
             className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
             placeholder="7-day sunrise stretch"
+            data-testid="challenge-name-input"
           />
           <Error message={form.formState.errors.name?.message} />
         </label>
@@ -82,6 +83,7 @@ export default function NewChallengePage() {
             rows={3}
             className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
             placeholder="What are the ground rules?"
+            data-testid="challenge-description-input"
           />
           <Error message={form.formState.errors.description?.message} />
         </label>
@@ -91,6 +93,7 @@ export default function NewChallengePage() {
             <select
               {...form.register("challenge_format")}
               className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              data-testid="challenge-format-select"
             >
               <option value="solo">Solo</option>
               <option value="1v1">1v1 duel</option>
@@ -106,6 +109,7 @@ export default function NewChallengePage() {
               max={365}
               {...form.register("duration_days", { valueAsNumber: true })}
               className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              data-testid="challenge-duration-input"
             />
             <Error message={form.formState.errors.duration_days?.message} />
           </label>
@@ -116,6 +120,7 @@ export default function NewChallengePage() {
               min={1}
               {...form.register("target_completions", { valueAsNumber: true })}
               className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              data-testid="challenge-target-input"
             />
             <Error message={form.formState.errors.target_completions?.message} />
           </label>
@@ -125,6 +130,7 @@ export default function NewChallengePage() {
               type="date"
               {...form.register("start_date")}
               className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              data-testid="challenge-start-date-input"
             />
             <Error message={form.formState.errors.start_date?.message} />
           </label>
@@ -134,6 +140,7 @@ export default function NewChallengePage() {
           <select
             {...form.register("visibility")}
             className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            data-testid="challenge-visibility-select"
           >
             <option value="private">Private</option>
             <option value="link">Link-only</option>
@@ -154,6 +161,7 @@ export default function NewChallengePage() {
             type="submit"
             disabled={loading}
             className="w-full rounded-full bg-gradient-to-r from-amber-500 to-indigo-500 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-amber-500/30 transition hover:shadow-lg hover:shadow-amber-500/40 active:scale-95 disabled:opacity-60"
+            data-testid="challenge-submit-button"
           >
             {loading ? "Launching..." : "Launch challenge"}
           </button>

@@ -53,56 +53,15 @@ export async function checkIn(habitId: string, date: string, note?: string) {
     note,
   });
 
-  const { data: habit } = await supabase
-    .from("habits")
-    .select("*")
-    .eq("id", habitId)
-    .single();
-
-  const { data: previousLog } = await supabase
-    .from("habit_logs")
-    .select("*")
-    .eq("habit_id", habitId)
-    .eq("user_id", user.id)
-    .order("log_date", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  const streak = calculateStreak(previousLog, date, habit?.frequency ?? "daily");
-
-  const { data: log, error } = await supabase
-    .from("habit_logs")
-    .insert({
-      habit_id: habitId,
-      user_id: user.id,
-      log_date: date,
-      status: "done",
-      note,
-      streak_count: streak,
-    })
-    .select()
-    .single();
-
-  if (error) {
-    throw error;
-  }
-
-  await supabase.from("feed_events").insert({
-    user_id: user.id,
-    event_type: "check_in",
-    habit_id: habitId,
-    log_id: log.id,
-    metadata: { streak_count: streak },
+  const { data: log, error } = await supabase.rpc("check_in_habit", {
+    p_habit_id: habitId,
+    p_user_id: user.id,
+    p_date: date,
+    p_note: note,
   });
 
-  if ([7, 14, 30, 60, 90, 100].includes(streak)) {
-    await supabase.from("feed_events").insert({
-      user_id: user.id,
-      event_type: "streak_milestone",
-      habit_id: habitId,
-      log_id: log.id,
-      metadata: { streak_count: streak },
-    });
+  if (error) {
+    throw new Error(`Check-in failed: ${error.message}`);
   }
 
   revalidatePath("/dashboard");

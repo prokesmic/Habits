@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
   if (sent) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-        <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-lg text-center">
+        <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-lg text-center" data-testid="email-sent-confirmation">
           <div className="text-5xl mb-4">📧</div>
           <h1 className="text-2xl font-semibold text-slate-900">Check your email</h1>
           <p className="mt-4 text-sm text-slate-600">
@@ -51,6 +51,7 @@ export default function ForgotPasswordPage() {
           <Link
             href="/auth/sign-in"
             className="mt-6 inline-block rounded-full bg-slate-900 px-6 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
+            data-testid="back-to-signin-link"
           >
             Back to Sign In
           </Link>
@@ -66,7 +67,7 @@ export default function ForgotPasswordPage() {
         <p className="mt-2 text-sm text-slate-500">
           Enter your email and we&apos;ll send you a link to reset your password.
         </p>
-        <form onSubmit={handleReset} className="mt-6 space-y-4">
+        <form onSubmit={handleReset} className="mt-6 space-y-4" data-testid="forgot-password-form">
           <label className="block text-sm font-semibold text-slate-700">
             Email
             <input
@@ -75,19 +76,22 @@ export default function ForgotPasswordPage() {
               onChange={(event) => setEmail(event.target.value)}
               placeholder="you@example.com"
               required
+              autoComplete="email"
+              data-testid="email-input"
               className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
             />
           </label>
           <button
             type="submit"
             disabled={loading || !email}
+            data-testid="reset-button"
             className="w-full rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:opacity-60"
           >
             {loading ? "Sending..." : "Send reset link"}
           </button>
         </form>
         <div className="mt-6 text-center">
-          <Link href="/auth/sign-in" className="text-sm font-semibold text-blue-600 hover:text-blue-700">
+          <Link href="/auth/sign-in" className="text-sm font-semibold text-blue-600 hover:text-blue-700" data-testid="signin-link">
             Back to Sign In
           </Link>
         </div>

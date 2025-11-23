@@ -24,28 +24,33 @@ export default async function DashboardPage() {
     redirect("/auth/sign-in");
   }
 
-  // Check profile and redirect to onboarding if needed
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("onboarding_completed, full_name")
-    .eq("id", user.id)
-    .single();
+  // Parallelize initial checks
+  const [profileResponse, habitsResponse] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("onboarding_completed, full_name")
+      .eq("id", user.id)
+      .single(),
+    supabase
+      .from("habits")
+      .select("id, title, emoji, frequency, target_days_per_week, current_streak, longest_streak, has_stake")
+      .eq("user_id", user.id)
+      .eq("archived", false)
+  ]);
+
+  const { data: profile, error: profileError } = profileResponse;
 
   // If profile doesn't exist or onboarding not completed, redirect immediately
   if (profileError || !profile || !profile.onboarding_completed) {
     redirect("/onboarding");
   }
 
-  // Only fetch data if onboarding is completed
+  const { data: habits } = habitsResponse;
+
+  // Use UTC date for consistency
   const today = new Date().toISOString().split("T")[0];
 
-  const { data: habits } = await supabase
-    .from("habits")
-    .select("id, title, emoji, frequency, target_days_per_week")
-    .eq("user_id", user.id)
-    .eq("archived", false);
-
-  // Check which habits have been checked in today
+  // Fetch logs for today
   const { data: todayLogs } = await supabase
     .from("habit_logs")
     .select("habit_id")
@@ -57,12 +62,12 @@ export default async function DashboardPage() {
 
   // Transform habits for dashboard
   const dashboardHabits = (habits ?? []).map((h) => {
-    const row = h as unknown as HabitSupabaseRow;
-    const idStr = String(row.id);
+    const idStr = String(h.id);
     const checkedIn = checkedInHabitIds.has(idStr);
-    const currentStreak = Math.floor(Math.random() * 15);
-    const mockSquadMembers = ["Emma", "John", "Sarah", "Mike", "Lisa"]
-      .slice(0, Math.floor(Math.random() * 5) + 1)
+
+    // Use real data where available, fallback to safe defaults
+    // TODO: Replace mock squad members with real relation
+    const mockSquadMembers = ["Emma", "John", "Sarah"]
       .map((name, i) => ({
         id: `member-${i}`,
         name,
@@ -72,18 +77,18 @@ export default async function DashboardPage() {
 
     return {
       id: idStr,
-      name: row.title ?? "Habit",
-      emoji: row.emoji ?? "✅",
-      currentStreak,
-      longestStreak: Math.floor(Math.random() * 60) + currentStreak,
+      name: h.title ?? "Habit",
+      emoji: h.emoji ?? "✅",
+      currentStreak: h.current_streak ?? 0,
+      longestStreak: h.longest_streak ?? 0,
       checkedInToday: checkedIn,
       squadMembers: mockSquadMembers,
-      hasStake: Math.random() > 0.8,
-      stakeAmount: Math.random() > 0.8 ? Math.floor(Math.random() * 50) + 10 : undefined,
+      hasStake: h.has_stake ?? false,
+      stakeAmount: h.has_stake ? 50 : undefined, // Placeholder until stakes table linked
     };
   });
 
-  // Mock activity feed data
+  // Mock activity feed data (TODO: Replace with real feed_events fetch)
   const mockActivities = [
     {
       id: "activity-1",
@@ -95,34 +100,6 @@ export default async function DashboardPage() {
       reactions: 8,
       timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
     },
-    {
-      id: "activity-2",
-      user: { name: "John" },
-      habit: { name: "Read 30 mins", emoji: "📚" },
-      reactions: 5,
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-    },
-    {
-      id: "activity-3",
-      user: { name: "Sarah" },
-      habit: { name: "Meditation", emoji: "🧘" },
-      reactions: 4,
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString(),
-    },
-    {
-      id: "activity-4",
-      user: { name: "Mike" },
-      habit: { name: "Daily Walk", emoji: "🚶" },
-      reactions: 3,
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
-    },
-    {
-      id: "activity-5",
-      user: { name: "Lisa" },
-      habit: { name: "Journaling", emoji: "📝" },
-      reactions: 6,
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString(),
-    },
   ];
 
   // Hot streaks (habits with 7+ day streaks)
@@ -131,14 +108,10 @@ export default async function DashboardPage() {
     .sort((a, b) => b.currentStreak - a.currentStreak)
     .slice(0, 5);
 
-  // Mock achievements
+  // Mock achievements (TODO: Replace with real achievements)
   const mockAchievements = [
     { id: "1", name: "First Check-in", emoji: "🎯" },
     { id: "2", name: "7-Day Streak", emoji: "🔥" },
-    { id: "3", name: "Early Bird", emoji: "🌅" },
-    { id: "4", name: "Squad Leader", emoji: "👑" },
-    { id: "5", name: "Consistency King", emoji: "⭐" },
-    { id: "6", name: "Photo Pro", emoji: "📸" },
   ];
 
   const userName = profile?.full_name || user.email?.split("@")[0] || "User";
@@ -164,7 +137,7 @@ export default async function DashboardPage() {
         hotStreaks={hotStreaks}
         achievements={mockAchievements}
         stakes={hasActiveStakes ? { count: dashboardHabits.filter(h => h.hasStake).length, totalAmount: totalStakeAmount } : null}
-        squadActiveNow={Math.floor(Math.random() * 8) + 2}
+        squadActiveNow={3}
       />
     </>
   );

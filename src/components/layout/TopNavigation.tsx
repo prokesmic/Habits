@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Calendar,
   Users,
@@ -49,6 +49,11 @@ export function TopNavigation({ userEmail, userAvatar }: Props) {
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  // Close dropdown when route changes to prevent blocking clicks
+  useEffect(() => {
+    setIsDropdownOpen(false);
+  }, [pathname]);
+
   async function handleLogout() {
     const supabase = createClient();
     await supabase.auth.signOut();
@@ -70,7 +75,7 @@ export function TopNavigation({ userEmail, userAvatar }: Props) {
           {/* LEFT: Logo + Nav Items */}
           <div className="flex items-center gap-8">
             {/* Logo */}
-            <Link href="/dashboard" className="flex items-center gap-2">
+            <Link href="/dashboard" className="flex items-center gap-2" data-testid="nav-logo">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-blue-500 flex items-center justify-center text-white font-bold text-xl">
                 H
               </div>
@@ -93,6 +98,7 @@ export function TopNavigation({ userEmail, userAvatar }: Props) {
                         : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                     }`}
                     title={item.description}
+                    data-testid={`nav-${item.label.toLowerCase()}`}
                   >
                     <Icon className="w-4 h-4" />
                     {item.label}
@@ -108,6 +114,7 @@ export function TopNavigation({ userEmail, userAvatar }: Props) {
             <button
               onClick={() => router.push("/habits/new")}
               className="hidden sm:flex px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all items-center gap-2"
+              data-testid="nav-new-habit"
             >
               <Plus className="w-4 h-4" />
               <span className="hidden lg:inline">New Habit</span>
@@ -118,6 +125,7 @@ export function TopNavigation({ userEmail, userAvatar }: Props) {
               onClick={() => router.push("/notifications")}
               className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
               type="button"
+              data-testid="nav-notifications"
             >
               <Bell className="w-5 h-5 text-gray-600" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
@@ -129,6 +137,7 @@ export function TopNavigation({ userEmail, userAvatar }: Props) {
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="flex items-center gap-2 hover:bg-gray-100 rounded-lg p-2 transition-colors"
                 type="button"
+                data-testid="nav-user-menu"
               >
                 {userAvatar ? (
                   <img
@@ -150,10 +159,11 @@ export function TopNavigation({ userEmail, userAvatar }: Props) {
 
               {isDropdownOpen && (
                 <>
-                  {/* Backdrop */}
+                  {/* Backdrop - click to close dropdown */}
                   <div
                     className="fixed inset-0 z-40"
                     onClick={() => setIsDropdownOpen(false)}
+                    data-testid="dropdown-backdrop"
                   />
 
                   {/* Dropdown Menu */}
@@ -175,6 +185,7 @@ export function TopNavigation({ userEmail, userAvatar }: Props) {
                         router.push("/profile");
                       }}
                       className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-50 transition-colors text-gray-700"
+                      data-testid="nav-profile"
                     >
                       <User className="w-4 h-4" />
                       Profile
@@ -186,6 +197,7 @@ export function TopNavigation({ userEmail, userAvatar }: Props) {
                         router.push("/analytics");
                       }}
                       className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-50 transition-colors text-gray-700"
+                      data-testid="nav-analytics"
                     >
                       <TrendingUp className="w-4 h-4" />
                       Analytics
@@ -197,6 +209,7 @@ export function TopNavigation({ userEmail, userAvatar }: Props) {
                         router.push("/settings");
                       }}
                       className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-50 transition-colors text-gray-700"
+                      data-testid="nav-settings"
                     >
                       <Settings className="w-4 h-4" />
                       Settings
@@ -210,6 +223,7 @@ export function TopNavigation({ userEmail, userAvatar }: Props) {
                         handleLogout();
                       }}
                       className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-50 transition-colors text-red-600"
+                      data-testid="nav-signout"
                     >
                       <LogOut className="w-4 h-4" />
                       Sign Out

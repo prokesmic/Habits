@@ -129,6 +129,7 @@ export default function JoinSquadWithCodePage() {
                 className="block w-full rounded-xl border border-slate-300 bg-white py-3 pl-12 pr-4 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                 disabled={joining}
                 maxLength={10}
+                data-testid="squad-invite-code-input"
               />
             </div>
             <p className="mt-2 text-xs text-slate-500">
@@ -147,12 +148,14 @@ export default function JoinSquadWithCodePage() {
               type="submit"
               disabled={joining || !inviteCode.trim()}
               className="flex-1 rounded-full bg-gradient-to-r from-amber-500 to-indigo-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:shadow-md active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+              data-testid="squad-join-submit-button"
             >
               {joining ? "Joining..." : "Join Squad"}
             </button>
             <Link
               href="/squads"
               className="rounded-full border-2 border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+              data-testid="squad-join-cancel-link"
             >
               Cancel
             </Link>
