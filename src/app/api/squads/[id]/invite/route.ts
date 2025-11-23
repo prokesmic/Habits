@@ -118,12 +118,12 @@ export async function POST(request: NextRequest, context: RouteContext) {
       if (existingMember) {
         const { data: alreadyMember } = await supabase
           .from("squad_members")
-          .select("id")
+          .select("user_id")
           .eq("squad_id", squadId)
           .eq("user_id", existingMember.id)
-          .single();
+          .limit(1);
 
-        if (alreadyMember) {
+        if (alreadyMember && alreadyMember.length > 0) {
           results.push({
             email: normalizedEmail,
             success: false,

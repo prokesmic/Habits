@@ -46,12 +46,12 @@ export default function JoinSquadWithCodePage() {
 
       const { data: existingMember } = await supabase
         .from("squad_members")
-        .select("id")
+        .select("user_id")
         .eq("squad_id", squad.id)
         .eq("user_id", user.id)
-        .single();
+        .limit(1);
 
-      if (existingMember) {
+      if (existingMember && existingMember.length > 0) {
         // Already a member, just redirect
         router.push(`/squads/${squad.id}`);
         return;

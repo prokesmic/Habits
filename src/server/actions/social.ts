@@ -112,12 +112,12 @@ export async function joinSquad(squadId: string) {
   // Check if already a member
   const { data: existing } = await supabase
     .from("squad_members")
-    .select("id")
+    .select("user_id")
     .eq("squad_id", squadId)
     .eq("user_id", user.id)
-    .single();
+    .limit(1);
 
-  if (existing) {
+  if (existing && existing.length > 0) {
     return { success: true, alreadyMember: true };
   }
 

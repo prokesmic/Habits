@@ -165,12 +165,12 @@ export default async function JoinByTokenPage({ params }: Props) {
   // Check if user is already a member
   const { data: existingMembership } = await supabase
     .from("squad_members")
-    .select("id")
+    .select("user_id")
     .eq("squad_id", invitation.squad_id)
     .eq("user_id", user.id)
-    .single();
+    .limit(1);
 
-  if (existingMembership) {
+  if (existingMembership && existingMembership.length > 0) {
     redirect(`/squads/${invitation.squad_id}`);
   }
 

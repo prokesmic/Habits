@@ -49,12 +49,12 @@ export async function POST(request: NextRequest, context: RouteContext) {
   // Check if already a member
   const { data: existingMembership } = await supabase
     .from("squad_members")
-    .select("id")
+    .select("user_id")
     .eq("squad_id", invitation.squad_id)
     .eq("user_id", user.id)
-    .single();
+    .limit(1);
 
-  if (existingMembership) {
+  if (existingMembership && existingMembership.length > 0) {
     // Update invitation status anyway
     await supabase
       .from("squad_invitations")
