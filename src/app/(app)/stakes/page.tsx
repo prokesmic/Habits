@@ -264,8 +264,9 @@ export default function StakesPage() {
             </div>
 
             <Link
-              href="/habits"
+              href="/stakes/new"
               className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-amber-600 shadow-sm hover:bg-amber-50 transition-colors"
+              data-testid="add-stake-button"
             >
               <Plus className="h-4 w-4" />
               Add New Stake
@@ -357,8 +358,9 @@ export default function StakesPage() {
                 : `No ${filter} stakes to show.`}
             </p>
             <Link
-              href="/habits"
+              href="/stakes/new"
               className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600 transition-colors"
+              data-testid="create-first-stake-button"
             >
               <Plus className="h-4 w-4" />
               Create Your First Stake
