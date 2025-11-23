@@ -18,14 +18,18 @@ export async function GET(request: NextRequest, context: RouteContext) {
   }
 
   // Check if user is a member of the squad
-  const { data: membership } = await supabase
+  console.log("[GET messages] Checking membership for user:", user.id, "squad:", squadId);
+  const { data: membership, error: membershipError } = await supabase
     .from("squad_members")
     .select("id")
     .eq("squad_id", squadId)
     .eq("user_id", user.id)
     .single();
 
+  console.log("[GET messages] Membership result:", { membership, error: membershipError });
+
   if (!membership) {
+    console.log("[GET messages] No membership found, returning 403");
     return NextResponse.json({ error: "Not a squad member" }, { status: 403 });
   }
 
@@ -91,14 +95,18 @@ export async function POST(request: NextRequest, context: RouteContext) {
   }
 
   // Check if user is a member of the squad
-  const { data: membership } = await supabase
+  console.log("[POST messages] Checking membership for user:", user.id, "squad:", squadId);
+  const { data: membership, error: membershipError } = await supabase
     .from("squad_members")
     .select("id")
     .eq("squad_id", squadId)
     .eq("user_id", user.id)
     .single();
 
+  console.log("[POST messages] Membership result:", { membership, error: membershipError });
+
   if (!membership) {
+    console.log("[POST messages] No membership found, returning 403");
     return NextResponse.json({ error: "Not a squad member" }, { status: 403 });
   }
 
