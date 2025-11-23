@@ -18,9 +18,18 @@ export async function createHabit(payload: unknown) {
 
   const validated = habitSchema.parse(payload);
 
+  // Database has 'emoji' column but form sends 'icon' (Lucide icon name)
+  // Store the icon name in emoji field for now (will be used for display)
+  const { icon, ...rest } = validated;
+  const habitData = {
+    ...rest,
+    emoji: icon || rest.emoji || "✅", // Use icon as emoji, fallback to emoji field or default
+    user_id: user.id,
+  };
+
   const { data: habit, error } = await supabase
     .from("habits")
-    .insert({ ...validated, user_id: user.id })
+    .insert(habitData)
     .select()
     .single();
 
