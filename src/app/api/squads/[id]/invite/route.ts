@@ -28,14 +28,14 @@ export async function POST(request: NextRequest, context: RouteContext) {
   }
 
   // Check if user is a member of the squad
-  const { data: membership } = await supabase
+  const { data: memberships } = await supabase
     .from("squad_members")
     .select("role")
     .eq("squad_id", squadId)
     .eq("user_id", user.id)
-    .single();
+    .limit(1);
 
-  if (!membership) {
+  if (!memberships || memberships.length === 0) {
     return NextResponse.json({ error: "Not a squad member" }, { status: 403 });
   }
 
@@ -227,14 +227,14 @@ export async function GET(request: NextRequest, context: RouteContext) {
   }
 
   // Check if user is a member of the squad
-  const { data: membership } = await supabase
+  const { data: memberships } = await supabase
     .from("squad_members")
     .select("role")
     .eq("squad_id", squadId)
     .eq("user_id", user.id)
-    .single();
+    .limit(1);
 
-  if (!membership) {
+  if (!memberships || memberships.length === 0) {
     return NextResponse.json({ error: "Not a squad member" }, { status: 403 });
   }
 

@@ -23,7 +23,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
   // Use limit(1) instead of single() to avoid PGRST116 error
   const { data: memberships, error: membershipError } = await supabase
     .from("squad_members")
-    .select("id, user_id, squad_id")
+    .select("user_id, squad_id, role")
     .eq("squad_id", squadId)
     .eq("user_id", user.id)
     .limit(1);
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
   // Use limit(1) instead of single() to avoid PGRST116 error
   const { data: memberships, error: membershipError } = await supabase
     .from("squad_members")
-    .select("id, user_id, squad_id")
+    .select("user_id, squad_id, role")
     .eq("squad_id", squadId)
     .eq("user_id", user.id)
     .limit(1);
