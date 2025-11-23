@@ -54,12 +54,13 @@ interface InteractionReport {
     error?: string;
     causedNavigation?: boolean;
     causedVisualChange?: boolean;
+    caused404?: boolean;
   }>;
   links: Array<{
     index: number;
     text: string;
     href: string;
-    status: 'working' | 'broken';
+    status: 'working' | 'broken' | '404';
     error?: string;
   }>;
   inputs: Array<{
@@ -75,6 +76,10 @@ interface InteractionReport {
     method: string;
     status: 'functional' | 'error';
   }>;
+  notFoundPages: Array<{
+    url: string;
+    triggeredBy: string;
+  }>;
 }
 
 export class AITestingAgent {
@@ -85,6 +90,57 @@ export class AITestingAgent {
   constructor(page: Page) {
     this.page = page;
     this.screenshotDir = path.join(process.cwd(), 'tests', 'reports', 'screenshots');
+  }
+
+  /**
+   * Check if the current page is a 404/Not Found page
+   */
+  private async is404Page(): Promise<boolean> {
+    try {
+      // Check page title for 404 indicators
+      const title = await this.page.title();
+      if (title.toLowerCase().includes('404') || title.toLowerCase().includes('not found')) {
+        return true;
+      }
+
+      // Check for common 404 indicators in the page content
+      const pageContent = await this.page.evaluate(() => {
+        const body = document.body;
+        return body ? body.innerText.toLowerCase().substring(0, 2000) : '';
+      });
+
+      const notFoundIndicators = [
+        'page not found',
+        '404',
+        'this page could not be found',
+        'this page doesn\'t exist',
+        'page does not exist',
+        'not found',
+        'the page you requested',
+        'oops! we couldn\'t find'
+      ];
+
+      for (const indicator of notFoundIndicators) {
+        if (pageContent.includes(indicator)) {
+          // Make sure it's not just a mention of 404 in content
+          const h1Text = await this.page.$eval('h1', el => el?.textContent?.toLowerCase() || '').catch(() => '');
+          if (h1Text.includes('404') || h1Text.includes('not found') || h1Text.includes('error')) {
+            return true;
+          }
+          // Check if 404 is prominent on the page
+          const largeText = await this.page.$$eval('h1, h2, [class*="error"], [class*="404"]', els =>
+            els.map(el => (el as HTMLElement).innerText?.toLowerCase() || '').join(' ')
+          ).catch(() => '');
+          if (largeText.includes('404') || largeText.includes('not found')) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    } catch (error) {
+      return false;
+    }
   }
 
   /**
@@ -900,9 +956,14 @@ Respond ONLY with valid JSON. NO markdown.`;
       try {
         await this.page.goto(normalizedUrl, { waitUntil: 'networkidle', timeout: 30000 });
         await this.page.waitForTimeout(1000);
-        
+
+        // Check if this page is a 404
+        if (await this.is404Page()) {
+          console.log(`   🚨 404 PAGE: ${normalizedUrl}`);
+        }
+
         // Find all links on the page
-        const links = await this.page.$$eval('a[href]', links => 
+        const links = await this.page.$$eval('a[href]', links =>
           links.map(link => link.getAttribute('href')).filter(Boolean) as string[]
         );
 
@@ -952,13 +1013,16 @@ Respond ONLY with valid JSON. NO markdown.`;
    */
   async testAllInteractiveElements(): Promise<InteractionReport> {
     console.log(`      🔘 Testing all interactive elements...`);
-    
+
     const report: InteractionReport = {
       buttons: [],
       links: [],
       inputs: [],
-      forms: []
+      forms: [],
+      notFoundPages: []
     };
+
+    const startUrl = this.page.url();
 
     // Test all buttons
     const buttons = await this.page.$$('button:visible');
@@ -975,12 +1039,29 @@ Respond ONLY with valid JSON. NO markdown.`;
           await button.click({ timeout: 3000 });
           await this.page.waitForTimeout(500);
           const urlAfter = this.page.url();
-          
+          const causedNavigation = urlBefore !== urlAfter;
+
+          // Check for 404 after navigation
+          let caused404 = false;
+          if (causedNavigation) {
+            caused404 = await this.is404Page();
+            if (caused404) {
+              console.log(`         🚨 404 DETECTED: Button "${text}" navigated to missing page: ${urlAfter}`);
+              report.notFoundPages.push({
+                url: urlAfter,
+                triggeredBy: `Button: ${text || `Button ${i}`}`
+              });
+              // Navigate back to continue testing
+              await this.page.goto(startUrl, { waitUntil: 'networkidle', timeout: 10000 }).catch(() => {});
+            }
+          }
+
           report.buttons.push({
             index: i,
             text: text || `Button ${i}`,
             status: 'clickable',
-            causedNavigation: urlBefore !== urlAfter
+            causedNavigation,
+            caused404
           });
         } else {
           report.buttons.push({
@@ -999,32 +1080,79 @@ Respond ONLY with valid JSON. NO markdown.`;
       }
     }
 
-    // Test visible links
+    // Test visible links - actually navigate to check for 404s
     const links = await this.page.$$('a:visible');
-    console.log(`         Testing ${links.length} links`);
-    
-    for (let i = 0; i < Math.min(links.length, 20); i++) { // Limit to 20 links
+    console.log(`         Testing ${links.length} links (checking for 404s)`);
+
+    // Get all internal link hrefs first
+    const linkData: Array<{href: string; text: string}> = [];
+    for (let i = 0; i < Math.min(links.length, 20); i++) {
       const link = links[i];
       try {
         const href = await link.getAttribute('href');
         const text = (await link.textContent())?.trim() || '';
-        
-        report.links.push({
-          index: i,
-          text: text || `Link ${i}`,
-          href: href || '',
-          status: href ? 'working' : 'broken'
-        });
+        if (href && href.startsWith('/') && !href.includes('/api/')) {
+          linkData.push({ href, text });
+        }
+      } catch {
+        // Skip inaccessible links
+      }
+    }
+
+    // Test each unique internal link by navigating
+    const testedHrefs = new Set<string>();
+    for (let i = 0; i < linkData.length; i++) {
+      const { href, text } = linkData[i];
+
+      // Skip duplicates
+      if (testedHrefs.has(href)) continue;
+      testedHrefs.add(href);
+
+      try {
+        const baseUrl = new URL(startUrl);
+        const fullUrl = new URL(href, baseUrl).href;
+
+        // Navigate to the link
+        await this.page.goto(fullUrl, { waitUntil: 'networkidle', timeout: 15000 });
+        await this.page.waitForTimeout(300);
+
+        // Check for 404
+        const is404 = await this.is404Page();
+
+        if (is404) {
+          console.log(`         🚨 404 DETECTED: Link "${text}" points to missing page: ${fullUrl}`);
+          report.links.push({
+            index: i,
+            text: text || `Link ${i}`,
+            href: href,
+            status: '404',
+            error: `Page not found: ${fullUrl}`
+          });
+          report.notFoundPages.push({
+            url: fullUrl,
+            triggeredBy: `Link: ${text || href}`
+          });
+        } else {
+          report.links.push({
+            index: i,
+            text: text || `Link ${i}`,
+            href: href,
+            status: 'working'
+          });
+        }
       } catch (error: any) {
         report.links.push({
           index: i,
-          text: `Link ${i}`,
-          href: '',
+          text: text || `Link ${i}`,
+          href: href,
           status: 'broken',
           error: error.message
         });
       }
     }
+
+    // Navigate back to original page
+    await this.page.goto(startUrl, { waitUntil: 'networkidle', timeout: 10000 }).catch(() => {});
 
     // Test inputs
     const inputs = await this.page.$$('input:visible, textarea:visible');

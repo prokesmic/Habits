@@ -387,7 +387,7 @@ export const DesktopDashboardClient = ({
               totalAtRisk={stakes?.totalAmount || 0}
               potentialWinnings={Math.round((stakes?.totalAmount || 0) * 1.5)}
               weeklyProgress={Math.round((habitsCompletedToday / Math.max(totalHabitsToday, 1)) * 100)}
-              onAddStake={() => router.push('/stakes/new')}
+              onAddStake={() => router.push('/stakes')}
             />
 
             {/* Daily Rewards */}
