@@ -87,7 +87,7 @@ export default async function DashboardPage() {
     return {
       id: idStr,
       name: h.title ?? "Habit",
-      emoji: h.emoji ?? "✅",
+      emoji: h.emoji ?? "Target", // Default to Lucide Target icon instead of checkmark
       currentStreak: 0, // TODO: Calculate from habit_logs or add column to habits table
       longestStreak: 0, // TODO: Calculate from habit_logs or add column to habits table
       checkedInToday: checkedIn,

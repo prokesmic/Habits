@@ -23,7 +23,7 @@ export async function createHabit(payload: unknown) {
   const { icon, ...rest } = validated;
   const habitData = {
     ...rest,
-    emoji: icon || rest.emoji || "✅", // Use icon as emoji, fallback to emoji field or default
+    emoji: icon || rest.emoji || "Target", // Use icon as emoji, fallback to emoji field or Target icon
     user_id: user.id,
   };
 
