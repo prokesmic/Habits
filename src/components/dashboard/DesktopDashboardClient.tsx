@@ -17,6 +17,7 @@ import {
   MissedStreak
 } from '@/components/ui/EmptyStates';
 import { QuickActions, DashboardQuickActionsHero } from './QuickActions';
+import { getIconByName } from '@/components/habits/IconPicker';
 
 type HabitStatus = "due" | "done";
 
@@ -414,6 +415,25 @@ export const DesktopDashboardClient = ({
 
 /* ====== PRESENTATIONAL COMPONENTS ====== */
 
+// Helper to check if a string is an emoji vs a Lucide icon name
+function isEmoji(str: string): boolean {
+  // Emojis are typically 1-4 characters with special Unicode ranges
+  // Lucide icon names are PascalCase like "CheckSquare", "Dumbbell"
+  if (!str || str.length === 0) return false;
+  // If it starts with a capital letter and has no spaces, it's likely an icon name
+  if (/^[A-Z][a-zA-Z0-9]*$/.test(str)) return false;
+  return true;
+}
+
+// Component to render either emoji or Lucide icon
+function HabitIcon({ emoji, className }: { emoji: string; className?: string }) {
+  if (isEmoji(emoji)) {
+    return <span className={className}>{emoji}</span>;
+  }
+  const Icon = getIconByName(emoji);
+  return <Icon className={className || "h-5 w-5"} />;
+}
+
 function HabitCard({ habit, onCheckIn }: { habit: TransformedHabit; onCheckIn: () => void }) {
   const isDone = habit.status === "done";
 
@@ -422,8 +442,8 @@ function HabitCard({ habit, onCheckIn }: { habit: TransformedHabit; onCheckIn: (
       <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 shadow-sm shadow-emerald-200/60">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-500 text-lg">
-              <span>{habit.emoji}</span>
+            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-500 text-lg text-white">
+              <HabitIcon emoji={habit.emoji} className={isEmoji(habit.emoji) ? undefined : "h-5 w-5"} />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -458,8 +478,8 @@ function HabitCard({ habit, onCheckIn }: { habit: TransformedHabit; onCheckIn: (
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-900/5">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 to-indigo-500 text-lg">
-            <span className="text-white">{habit.emoji}</span>
+          <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 to-indigo-500 text-lg text-white">
+            <HabitIcon emoji={habit.emoji} className={isEmoji(habit.emoji) ? undefined : "h-5 w-5"} />
           </div>
           <div>
             <div className="flex items-center gap-2">
