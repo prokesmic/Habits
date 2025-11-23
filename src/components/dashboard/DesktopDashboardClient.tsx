@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/EmptyStates';
 import { QuickActions, DashboardQuickActionsHero } from './QuickActions';
 import { getIconByName } from '@/components/habits/IconPicker';
+import { Pencil } from 'lucide-react';
 
 type HabitStatus = "due" | "done";
 
@@ -450,6 +451,13 @@ function HabitCard({ habit, onCheckIn }: { habit: TransformedHabit; onCheckIn: (
                 <Link href={`/habits/${habit.id}`} className="text-sm font-semibold text-emerald-950 hover:underline">
                   {habit.name}
                 </Link>
+                <Link
+                  href={`/habits/${habit.id}/edit`}
+                  className="p-1 rounded-lg hover:bg-emerald-100 transition-colors"
+                  title="Edit habit"
+                >
+                  <Pencil className="h-3.5 w-3.5 text-emerald-600" />
+                </Link>
                 <span className="inline-flex items-center rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
                   Done today
                 </span>
@@ -485,6 +493,13 @@ function HabitCard({ habit, onCheckIn }: { habit: TransformedHabit; onCheckIn: (
             <div className="flex items-center gap-2">
               <Link href={`/habits/${habit.id}`} className="text-sm font-semibold text-slate-900 hover:underline">
                 {habit.name}
+              </Link>
+              <Link
+                href={`/habits/${habit.id}/edit`}
+                className="p-1 rounded-lg hover:bg-slate-100 transition-colors"
+                title="Edit habit"
+              >
+                <Pencil className="h-3.5 w-3.5 text-slate-400" />
               </Link>
               <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700">
                 Due today

@@ -79,6 +79,71 @@ export async function checkIn(habitId: string, date: string, note?: string) {
   return log;
 }
 
+export async function updateHabit(habitId: string, payload: unknown) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const validated = habitSchema.partial().parse(payload);
+
+  // Map icon to emoji field if provided
+  const { icon, ...rest } = validated;
+  const updateData: Record<string, unknown> = { ...rest };
+
+  if (icon !== undefined) {
+    updateData.emoji = icon;
+  } else if (rest.emoji !== undefined) {
+    updateData.emoji = rest.emoji;
+  }
+
+  const { data: habit, error } = await supabase
+    .from("habits")
+    .update(updateData)
+    .eq("id", habitId)
+    .eq("user_id", user.id) // Ensure user owns the habit
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to update habit: ${error.message}`);
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/habits/${habitId}`);
+  return habit;
+}
+
+export async function getHabit(habitId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: habit, error } = await supabase
+    .from("habits")
+    .select("*")
+    .eq("id", habitId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to fetch habit: ${error.message}`);
+  }
+
+  return habit;
+}
+
 export async function completeOnboarding() {
   const supabase = await createClient();
   const {
