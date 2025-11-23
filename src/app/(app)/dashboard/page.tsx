@@ -75,12 +75,13 @@ export default async function DashboardPage() {
 
     // Use real data where available, fallback to safe defaults
     // TODO: Replace mock squad members with real relation
+    // Use deterministic values to avoid hydration mismatch (no Math.random())
     const mockSquadMembers = ["Emma", "John", "Sarah"]
       .map((name, i) => ({
         id: `member-${i}`,
         name,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`,
-        checkedInToday: Math.random() > 0.4,
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1`,
+        checkedInToday: i < 2, // First two checked in, deterministic
       }));
 
     return {
