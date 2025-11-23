@@ -1,5 +1,5 @@
 -- Fix RLS policies for squad_members table
--- The "for all" policy might not work correctly, so we explicitly define INSERT and SELECT policies
+-- IMPORTANT: Avoid self-referencing policies to prevent infinite recursion
 
 -- Drop existing policies
 DROP POLICY IF EXISTS "Manage own membership" ON public.squad_members;
@@ -17,18 +17,19 @@ CREATE POLICY "Users can insert own membership" ON public.squad_members
   FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
--- SELECT: Users can see their own memberships AND all members of squads they belong to
+-- SELECT: Users can see memberships in squads they own OR their own membership
+-- We check squad ownership via the squads table (not squad_members) to avoid recursion
 CREATE POLICY "Squad members can view all squad members" ON public.squad_members
   FOR SELECT
   USING (
     -- User can see their own membership
     user_id = auth.uid()
     OR
-    -- User can see other members if they are in the same squad
+    -- Squad owner can see all members in their squads
     EXISTS (
-      SELECT 1 FROM public.squad_members my_membership
-      WHERE my_membership.squad_id = squad_members.squad_id
-      AND my_membership.user_id = auth.uid()
+      SELECT 1 FROM public.squads s
+      WHERE s.id = squad_members.squad_id
+      AND s.owner_id = auth.uid()
     )
   );
 

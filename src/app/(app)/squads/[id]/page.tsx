@@ -84,34 +84,63 @@ export default async function SquadDetailPage({ params }: SquadPageProps) {
     isMember = false;
     isAdmin = false;
   } else {
+    console.log("[SquadPage] Fetching members for squad:", id);
+    console.log("[SquadPage] Current user:", user.id);
+
     // Check if user is a member
-    const { data: membership } = await supabase
+    const { data: membership, error: membershipError } = await supabase
       .from("squad_members")
       .select("role, joined_at")
       .eq("squad_id", id)
       .eq("user_id", user.id)
       .single();
 
-    // Fetch squad members
-    const { data: members } = await supabase
+    console.log("[SquadPage] Membership check:", { membership, error: membershipError });
+
+    // Fetch squad members - simplified query without profile join
+    const { data: members, error: membersError } = await supabase
       .from("squad_members")
-      .select("user_id, role, joined_at, profile:profiles(username, avatar_url)")
+      .select("user_id, role, joined_at")
       .eq("squad_id", id)
       .order("joined_at", { ascending: true })
       .limit(20);
+
+    console.log("[SquadPage] Members query result:", {
+      memberCount: members?.length ?? 0,
+      members,
+      error: membersError
+    });
+
+    // Fetch profiles separately if we have members
+    let profilesMap: Record<string, { username: string; avatar_url: string | null }> = {};
+    if (members && members.length > 0) {
+      const userIds = members.map(m => m.user_id);
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, username, avatar_url")
+        .in("id", userIds);
+
+      profiles?.forEach(p => {
+        profilesMap[p.id] = { username: p.username, avatar_url: p.avatar_url };
+      });
+    }
 
     membersList =
       (members ?? []).map((m) => ({
         userId: m.user_id,
         role: m.role ?? "member",
-        username: (m as any).profile?.username ?? "Anonymous",
-        avatarUrl: (m as any).profile?.avatar_url ?? null,
+        username: profilesMap[m.user_id]?.username ?? "Anonymous",
+        avatarUrl: profilesMap[m.user_id]?.avatar_url ?? null,
         joinedAt: m.joined_at,
       })) ?? [];
+
+    console.log("[SquadPage] Final membersList:", membersList);
 
     isMember = !!membership;
     isAdmin = membership?.role === "admin";
     isOwner = membership?.role === "owner" || squad.owner_id === user.id;
+
+    console.log("[SquadPage] Membership status:", { isMember, isAdmin, isOwner });
   }
 
   return (
