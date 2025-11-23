@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Trash2, Loader2, AlertTriangle } from "lucide-react";
 import { deleteSquad } from "@/server/actions/social";
 
 export function DeleteSquadButton({ squadId, squadName }: { squadId: string; squadName: string }) {
-  const router = useRouter();
   const [showConfirm, setShowConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,8 +15,8 @@ export function DeleteSquadButton({ squadId, squadName }: { squadId: string; squ
 
     try {
       await deleteSquad(squadId);
-      router.push("/squads");
-      router.refresh();
+      // Use window.location for hard navigation to avoid Server Component re-render issues
+      window.location.href = "/squads";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete squad");
       setIsDeleting(false);

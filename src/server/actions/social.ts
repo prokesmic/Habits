@@ -197,6 +197,7 @@ export async function createSquad(name: string, description: string) {
     throw new Error("Unauthorized");
   }
 
+  console.log("[createSquad] Starting squad creation for user:", user.id);
   const inviteCode = generateInviteCode();
 
   // Insert squad with is_public=true temporarily so we can read it back
@@ -214,13 +215,19 @@ export async function createSquad(name: string, description: string) {
     .single();
 
   if (squadError || !insertResult) {
-    console.error("Squad creation error:", squadError);
+    console.error("[createSquad] Squad creation error:", squadError);
     throw new Error(`Failed to create squad: ${squadError?.message || "No data returned"}`);
   }
 
   const squadId = insertResult.id;
+  console.log("[createSquad] Squad created with ID:", squadId);
 
-  // Add owner as squad member - this is critical for chat and other features
+  // Add owner as squad member - use simple INSERT without SELECT to avoid RLS issues
+  console.log("[createSquad] Adding user as squad member...");
+  console.log("[createSquad] User ID:", user.id);
+  console.log("[createSquad] Squad ID:", squadId);
+
+  // Simple INSERT without returning data
   const { error: memberError } = await supabase
     .from("squad_members")
     .insert({
@@ -230,13 +237,38 @@ export async function createSquad(name: string, description: string) {
     });
 
   if (memberError) {
-    console.error("Squad member creation error:", memberError);
+    console.error("[createSquad] Member INSERT error:", memberError);
+    console.error("[createSquad] Error code:", memberError.code);
+    console.error("[createSquad] Error message:", memberError.message);
+    console.error("[createSquad] Error details:", memberError.details);
+    console.error("[createSquad] Error hint:", memberError.hint);
+
     // If it's not a duplicate key error, this is a real problem
     if (memberError.code !== "23505") {
-      // Try to clean up the squad we just created
+      // Clean up the squad we just created
       await supabase.from("squads").delete().eq("id", squadId);
       throw new Error(`Failed to add you as squad member: ${memberError.message}`);
+    } else {
+      console.log("[createSquad] Member already exists (duplicate key)");
     }
+  } else {
+    console.log("[createSquad] Member INSERT completed without error");
+  }
+
+  // Verify the member was actually added
+  const { data: verifyMember, error: verifyError } = await supabase
+    .from("squad_members")
+    .select("squad_id, user_id, role")
+    .eq("squad_id", squadId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (verifyError || !verifyMember) {
+    console.error("[createSquad] VERIFICATION FAILED - member not found after insert!");
+    console.error("[createSquad] Verify error:", verifyError);
+    console.error("[createSquad] This indicates RLS is blocking the INSERT or SELECT");
+  } else {
+    console.log("[createSquad] VERIFICATION SUCCESS - member exists:", verifyMember);
   }
 
   // Now set is_public back to false (user can change it later if they want)
@@ -265,36 +297,52 @@ export async function deleteSquad(squadId: string) {
     error: authError,
   } = await supabase.auth.getUser();
 
+  console.log("[deleteSquad] Starting deletion for squad:", squadId);
+
   if (authError || !user) {
+    console.error("[deleteSquad] Auth error:", authError);
     throw new Error("Unauthorized");
   }
+
+  console.log("[deleteSquad] User:", user.id);
 
   // Check if user is the owner of the squad
   const { data: squad, error: squadError } = await supabase
     .from("squads")
-    .select("owner_id")
+    .select("owner_id, name")
     .eq("id", squadId)
     .single();
 
-  if (squadError || !squad) {
+  if (squadError) {
+    console.error("[deleteSquad] Squad fetch error:", squadError);
+    throw new Error(`Squad not found: ${squadError.message}`);
+  }
+
+  if (!squad) {
+    console.error("[deleteSquad] Squad not found");
     throw new Error("Squad not found");
   }
 
+  console.log("[deleteSquad] Squad owner:", squad.owner_id, "Name:", squad.name);
+
   if (squad.owner_id !== user.id) {
+    console.error("[deleteSquad] User is not owner");
     throw new Error("Only the squad owner can delete the squad");
   }
 
   // Delete the squad (cascade will handle members and messages)
+  console.log("[deleteSquad] Deleting squad...");
   const { error: deleteError } = await supabase
     .from("squads")
     .delete()
     .eq("id", squadId);
 
   if (deleteError) {
-    console.error("Squad deletion error:", deleteError);
+    console.error("[deleteSquad] Deletion error:", deleteError);
     throw new Error(`Failed to delete squad: ${deleteError.message}`);
   }
 
+  console.log("[deleteSquad] Squad deleted successfully");
   revalidatePath("/squads");
   return { success: true };
 }
@@ -330,7 +378,7 @@ export async function fixSquadMembership(squadId: string) {
   // Check if owner is already a member
   const { data: existingMember } = await supabase
     .from("squad_members")
-    .select("id")
+    .select("squad_id")
     .eq("squad_id", squadId)
     .eq("user_id", user.id)
     .single();
@@ -340,6 +388,10 @@ export async function fixSquadMembership(squadId: string) {
   }
 
   // Add owner as member
+  console.log("[fixSquadMembership] Adding user as squad member...");
+  console.log("[fixSquadMembership] User ID:", user.id);
+  console.log("[fixSquadMembership] Squad ID:", squadId);
+
   const { error: memberError } = await supabase
     .from("squad_members")
     .insert({
@@ -349,8 +401,24 @@ export async function fixSquadMembership(squadId: string) {
     });
 
   if (memberError) {
-    console.error("Failed to add owner as member:", memberError);
+    console.error("[fixSquadMembership] INSERT failed:", memberError);
+    console.error("[fixSquadMembership] Error code:", memberError.code);
+    console.error("[fixSquadMembership] Error details:", memberError.details);
     throw new Error(`Failed to add membership: ${memberError.message}`);
+  }
+
+  console.log("[fixSquadMembership] INSERT completed without error");
+
+  // Verify the member was added
+  const { data: verifyMember } = await supabase
+    .from("squad_members")
+    .select("squad_id")
+    .eq("squad_id", squadId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!verifyMember) {
+    throw new Error("Membership was not added. Please contact support.");
   }
 
   revalidatePath(`/squads/${squadId}`);
