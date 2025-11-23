@@ -6,6 +6,7 @@ import { allSquads } from "@/data/mockSquadsFull";
 import { CopyInviteCode } from "@/components/squads/CopyInviteCode";
 import { DeleteSquadButton } from "@/components/squads/DeleteSquadButton";
 import { InviteMembersButton } from "@/components/squads/InviteMembersButton";
+import { FixMembershipButton } from "@/components/squads/FixMembershipButton";
 
 export const dynamic = "force-dynamic";
 
@@ -241,6 +242,19 @@ export default async function SquadDetailPage({ params }: SquadPageProps) {
               {squad.invite_code}
             </code>
             <CopyInviteCode code={squad.invite_code} />
+          </div>
+        </section>
+      )}
+
+      {/* Fix Membership - Show to owner who is not a member */}
+      {isOwner && !isMember && !isMockSquad && (
+        <section className="rounded-3xl border border-amber-200 bg-amber-50 p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-amber-900">Fix Membership Issue</h2>
+          <p className="mt-1 text-sm text-amber-700">
+            You created this squad but aren't listed as a member. Click below to fix this.
+          </p>
+          <div className="mt-4">
+            <FixMembershipButton squadId={squad.id} />
           </div>
         </section>
       )}

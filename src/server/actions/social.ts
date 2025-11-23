@@ -299,6 +299,66 @@ export async function deleteSquad(squadId: string) {
   return { success: true };
 }
 
+// Fix squads where creator is not a member
+export async function fixSquadMembership(squadId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  // Get the squad
+  const { data: squad, error: squadError } = await supabase
+    .from("squads")
+    .select("id, owner_id, name")
+    .eq("id", squadId)
+    .single();
+
+  if (squadError || !squad) {
+    throw new Error("Squad not found");
+  }
+
+  // Check if user is the owner
+  if (squad.owner_id !== user.id) {
+    throw new Error("Only the owner can fix membership");
+  }
+
+  // Check if owner is already a member
+  const { data: existingMember } = await supabase
+    .from("squad_members")
+    .select("id")
+    .eq("squad_id", squadId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (existingMember) {
+    return { success: true, alreadyMember: true };
+  }
+
+  // Add owner as member
+  const { error: memberError } = await supabase
+    .from("squad_members")
+    .insert({
+      squad_id: squadId,
+      user_id: user.id,
+      role: "owner",
+    });
+
+  if (memberError) {
+    console.error("Failed to add owner as member:", memberError);
+    throw new Error(`Failed to add membership: ${memberError.message}`);
+  }
+
+  revalidatePath(`/squads/${squadId}`);
+  revalidatePath("/squads");
+
+  return { success: true, alreadyMember: false };
+}
+
 function generateReferralCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
 }
