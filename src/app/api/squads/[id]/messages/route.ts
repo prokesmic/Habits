@@ -19,16 +19,27 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
   // Check if user is a member of the squad
   console.log("[GET messages] Checking membership for user:", user.id, "squad:", squadId);
-  const { data: membership, error: membershipError } = await supabase
+
+  // Use limit(1) instead of single() to avoid PGRST116 error
+  const { data: memberships, error: membershipError } = await supabase
     .from("squad_members")
-    .select("id")
+    .select("id, user_id, squad_id")
     .eq("squad_id", squadId)
     .eq("user_id", user.id)
-    .single();
+    .limit(1);
 
-  console.log("[GET messages] Membership result:", { membership, error: membershipError });
+  console.log("[GET messages] Membership result:", {
+    memberships,
+    count: memberships?.length ?? 0,
+    error: membershipError
+  });
 
-  if (!membership) {
+  if (membershipError) {
+    console.error("[GET messages] Membership query error:", membershipError);
+    return NextResponse.json({ error: "Database error" }, { status: 500 });
+  }
+
+  if (!memberships || memberships.length === 0) {
     console.log("[GET messages] No membership found, returning 403");
     return NextResponse.json({ error: "Not a squad member" }, { status: 403 });
   }
@@ -96,16 +107,27 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
   // Check if user is a member of the squad
   console.log("[POST messages] Checking membership for user:", user.id, "squad:", squadId);
-  const { data: membership, error: membershipError } = await supabase
+
+  // Use limit(1) instead of single() to avoid PGRST116 error
+  const { data: memberships, error: membershipError } = await supabase
     .from("squad_members")
-    .select("id")
+    .select("id, user_id, squad_id")
     .eq("squad_id", squadId)
     .eq("user_id", user.id)
-    .single();
+    .limit(1);
 
-  console.log("[POST messages] Membership result:", { membership, error: membershipError });
+  console.log("[POST messages] Membership result:", {
+    memberships,
+    count: memberships?.length ?? 0,
+    error: membershipError
+  });
 
-  if (!membership) {
+  if (membershipError) {
+    console.error("[POST messages] Membership query error:", membershipError);
+    return NextResponse.json({ error: "Database error" }, { status: 500 });
+  }
+
+  if (!memberships || memberships.length === 0) {
     console.log("[POST messages] No membership found, returning 403");
     return NextResponse.json({ error: "Not a squad member" }, { status: 403 });
   }
